@@ -102,17 +102,9 @@ include_cli() {
 }
 
 # include_gui() {}
-# include_config() {}
-
 
 # include_x11() {}
 # include_way() {}
-
-
-# include_xfce() {}
-# include_kde() {}
-# include_bspwm() {}
-# include_river() {}
 
 build_variant() {
     variant="$1"

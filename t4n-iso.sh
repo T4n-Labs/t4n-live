@@ -221,7 +221,7 @@ EOF
 
     case "$variant" in
       base|server)
-        echo "Without Pipewire"
+        echo -e "\033[0;31m[!]\033[0m Without Pipewire"
       ;;
       *)
         setup_pipewire

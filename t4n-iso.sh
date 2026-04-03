@@ -20,8 +20,8 @@ usage() {
 
 	OPTIONS
 	 -a <arch>     Set architecture (or platform) in the image
-	 -b <variant>  One of base, server, xfce,xfce-wayland(default: base).
-                   May be specified multiple times to build multiple variants.
+	 -b <variant>  One of base, server, bspwm(Gh0sT4n), xfce,xfce-wayland May be
+                   specified multiple times to build multiple variants.(Default: base).
 	 -d <date>     Override the datestamp on the generated image (YYYYMMDD format)
 	 -t <arch-date-variant>
 	               Equivalent to setting -a, -b, and -d
@@ -112,9 +112,10 @@ wheel:x:10:anon
 EOF
 }
 
+# include_server() {}
 # include_gui() {}
 
-# include_server() {}
+# include_bspwm() {}
 
 build_variant() {
     variant="$1"
@@ -158,7 +159,17 @@ build_variant() {
     FONTS="fontconfig font-misc-misc terminus-font dejavu-fonts-ttf"
     WAYLAND_PKGS="$GFX_WL_PKGS $FONTS orca"
     XORG_PKGS="$GFX_PKGS $FONTS xorg-fonts xorg-server xorg-apps xorg-minimal xorg-input-drivers setxkbmap xauth orca"
-    SERVICES="sshd chronyd"
+    SERVICES="sshd chronyd dbus NetworkManager polkitd elogind lightdm rtkit"
+
+    # Custom By Gh0ST4n
+    SERVICES_PKGS="dbus NetworkManager polkitd elogind lightdm rtkit"
+    BSPWM0="xorg xf86-input-libinput network-manager alacritty xfce4-terminal rofi dmenu polybar picom Thunar gvfs gvfs-mtp"
+    BSPWM1="thunar-archive-plugin thunar-media-tags-plugin feh brightnessctl xss-lock betterlockscreen i3lock-color xrdb xdg-user-dirs polkit-gnome"
+    BSPWM2="power-profiles-daemon lm_sensors htop btop fastfetch playerctl firefox chromium flameshot galculator geany timeshift xmirror lxappearance"
+    BSPWM3="papirus-icon-theme gtk-engine-murrine arc-theme pipewire wireplumber libspa-bluetooth alsa-pipewire libjack-pipewire pavucontrol pamixer"
+    BSPWM4="tree bat eza nano vi vim neovim git curl wget zenity tmux fzf ranger base-devel xtools"
+
+    BSPWM="$BSWPM0 $BSWPM1 $BSWPM2 $BSWPM3 $BSPWM4"
 
     LIGHTDM_SESSION=''
 
@@ -178,6 +189,7 @@ build_variant() {
         xfce*)
             PKGS="$PKGS $FILE_PKGS $XORG_PKGS lightdm lightdm-gtk-greeter xfce4 elogind gnome-themes-standard gnome-keyring network-manager-applet gvfs-afc gvfs-mtp gvfs-smb udisks2 firefox xfce4-pulseaudio-plugin tree bat eza nano"
             CLI=yes
+            # GUI=yes
 
             SERVICES="$SERVICES dbus lightdm NetworkManager polkitd elogind"
             LIGHTDM_SESSION=xfce
@@ -186,6 +198,13 @@ build_variant() {
                 PKGS="$PKGS $WAYLAND_PKGS labwc"
                 LIGHTDM_SESSION="xfce-wayland"
             fi
+        ;;
+        bspwm)
+            PKGS="$SERVICES_PKGS $PKGS $FILE_PKGS $BSPWM"
+            CLI=yes
+            BSPWM=yes
+
+            SERVICES="$SERVICES"
         ;;
         *)
             >&2 echo "Unknown variant $variant"
@@ -210,6 +229,14 @@ EOF
     # if [ "$SERVER" = yes ]; then
     #   include_server
     # fi
+
+    # if [ "$GUI" = yes ]; then
+    #   include_gui
+    # fi
+
+    if [ "$BSPWM" = yes ]; then
+      include_bspwm
+    fi
 
     if [ "$WANT_INSTALLER" = yes ]; then
         include_installer

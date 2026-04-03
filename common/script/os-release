@@ -5,7 +5,7 @@ ID_LIKE=void
 
 BUILD_ID=rolling
 VERSION="Rolling"
-VERSION_CODENAME=miftah
+VERSION_CODENAME=Testing
 
 ANSI_COLOR="38;2;34;139;34"
 

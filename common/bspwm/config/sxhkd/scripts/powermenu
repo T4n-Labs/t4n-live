@@ -86,12 +86,12 @@ typeset -A menu
 
 # Menu with keys/commands using loginctl (elogind)
 menu=(
-  [⏻   Shutdown]="loginctl poweroff"
+  [⏻    Shutdown]="loginctl poweroff"
   [↻   Reboot]="loginctl reboot"
-  [   Suspend]="~/.config/bspwm/utility/scripts/powermenu-suspend"
+  [    Suspend]="~/.config/bspwm/sxhkd/scripts/powermenu-suspend"
   [    Hibernate]="loginctl hibernate"
-  [    Lock]="~/.config/bspwm/utility/scripts/lock"
-  [↪    Logout]="bspc quit"
+  [    Lock]="~/.config/bspwm/scripts/lock"
+  [↪   Logout]="bspc quit"
   [    Cancel]=""
 )
 

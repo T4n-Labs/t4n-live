@@ -1,10 +1,10 @@
 #!/bin/bash
 
 ## Autostart
-~/.config/bspwm/00A &
+~/.config/bspwm/scripts/00A &
 
 ## Lockscreen
-xss-lock -- ~/.config/bspwm/utility/scripts/auto-lock &
+xss-lock -- ~/config/bspwm/scripts/lock &
 
 xautolock -time 5 -locker "pkill -USR1 xss-lock" \
     -detectsleep -corners ---- &

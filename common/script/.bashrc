@@ -12,7 +12,7 @@ alias cat='bat --theme=base16'
 alias ls='eza --icons=always --color=always'
 alias la='eza --icons=always --color=always -a'
 alias ll='eza --icons=always --color=always -la'
-alias tree='exa --icons=always --tree'
+alias tree='eza --icons=always --tree'
 alias grep='grep --color=auto'
 
 # Prompt Line

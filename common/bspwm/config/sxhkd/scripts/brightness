@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+notification_timeout=1000
+
+bar() {
+    percent=$1
+    length=20
+
+    # Clamp biar aman
+    [ "$percent" -gt 100 ] && percent=100
+    [ "$percent" -lt 0 ] && percent=0
+
+    filled=$(( percent * length / 100 ))
+    empty=$(( length - filled ))
+
+    bar=""
+    space=""
+
+    [ "$filled" -gt 0 ] && bar=$(printf "%0.s=" $(seq 1 $filled))
+    [ "$empty" -gt 0 ] && space=$(printf "%0.s" $(seq 1 $empty))
+
+    echo "$bar$space"
+}
+
+MAX=$(brightnessctl m)
+STEP=$(( MAX * 5 / 100 ))
+
+get_percent() {
+    CUR=$(brightnessctl g)
+    echo $(( CUR * 100 / MAX ))
+}
+
+case "$1" in
+  up)
+    brightnessctl s +$STEP > /dev/null
+    ;;
+  down)
+    brightnessctl s $STEP- > /dev/null
+    ;;
+esac
+
+PERCENT=$(get_percent)
+BAR=$(bar $PERCENT)
+
+notify-send -t $notification_timeout \
+-h string:x-dunst-stack-tag:brightness \
+"  Brightness : $PERCENT%" "$BAR"

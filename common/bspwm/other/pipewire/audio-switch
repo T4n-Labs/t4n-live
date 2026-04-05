@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# audio-switch-minimal.sh - Simple audio toggle for PipeWire
+
+# Find your sink IDs with: wpctl status | grep -A2 "Sinks:"
+SINK_BUILTIN="44"    # Built-in audio
+SINK_HDMI="45"       # HDMI audio
+
+# Get current default sink
+CURRENT_SINK=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | \
+    head -n1 | grep -oE '@[0-9]+' | sed 's/@//')
+
+# Get sink name
+get_sink_name() {
+    wpctl inspect "$1" 2>/dev/null | \
+        grep "node.description" | \
+        cut -d'"' -f2 | \
+        head -n1
+}
+
+# Switch audio
+if [ "$CURRENT_SINK" = "$SINK_BUILTIN" ]; then
+    wpctl set-default "$SINK_HDMI"
+    SINK_NAME=$(get_sink_name "$SINK_HDMI")
+    notify-send -t 2000 "🔊 Audio Switch" "Switched to: $SINK_NAME"
+else
+    wpctl set-default "$SINK_BUILTIN"
+    SINK_NAME=$(get_sink_name "$SINK_BUILTIN")
+    notify-send -t 2000 "🔊 Audio Switch" "Switched to: $SINK_NAME"
+fi
+
+# Move all existing streams to new sink
+wpctl status 2>/dev/null | \
+    grep -E "^[[:space:]]*[0-9]+\.[[:space:]]*[0-9]+" | \
+    awk '{print $1}' | sed 's/\.$//' | \
+    while read -r stream; do
+        if [ "$CURRENT_SINK" = "$SINK_BUILTIN" ]; then
+            wpctl move-stream "$stream" "$SINK_HDMI" 2>/dev/null
+        else
+            wpctl move-stream "$stream" "$SINK_BUILTIN" 2>/dev/null
+        fi
+    done
+
+# Informasi
+# 1. Untuk menemukan sink ID:
+# # PipeWire
+# wpctl status | grep -A5 "Sinks:"
+
+# # Atau lebih detail:
+# wpctl inspect all | grep -A10 "Sink"
+# ---
+# wpctl status
+# # atau
+# pactl list sinks short
+
+# 2. Untuk versi minimal, edit sink ID di script:
+# # Ganti nilai ini dengan sink ID Anda
+# SINK_BUILTIN="44"    # Audio built-in
+# SINK_HDMI="45"       # HDMI output

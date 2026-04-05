@@ -1,0 +1,174 @@
+# ===== CONFIGURE BSPWM =====
+
+# ==== Apps ====
+# == Terminal ==
+super + Return
+    alacritty
+
+super + shift + Return
+    xfce4-terminal
+
+# == Rofi ==
+# Menu
+super + d
+    rofi -show drun -config ~/.config/rofi/config.rasi
+
+super + y
+    rofi -show window -config ~/.config/rofi/workspace.rasi
+
+super + shift + y
+    ~/.config/sxhkd/scripts/rofi-monitor
+
+# == END
+
+# == Apps ==
+# File manager
+super + e
+    thunar
+
+# Firefox
+super + w
+    firefox
+
+# # Google Chrome
+# super + g
+#     google-chrome-stable
+
+# Discord
+# super + shift + d
+#     discord
+
+# Telegram
+# super + t
+#     telegram-desktop
+
+# == Utility ==
+# ==Dunst==
+# Clear Notification
+super + alt + space
+   dunstctl close-all
+
+
+# ==Screenshot GUI==
+Print
+    flameshot gui
+# Screenshot alternate
+super + shift + s
+    flameshot gui
+
+
+# ==Wifi nmtui==
+super + shift + w
+    alacritty -e nmtui
+
+
+# ==Monitor==
+# Enable
+super + n
+    ~/.config/sxhkd/scripts/hdmi connect
+# Disable
+super + m
+    ~/.config/sxhkd/scripts/hdmi disconnect
+
+# ==AUDIO==
+
+XF86AudioRaiseVolume
+    ~/.config/other/pipewire/volume up
+
+XF86AudioLowerVolume
+    ~/.config/other/pipewire/volume down
+
+XF86AudioMute
+    ~/.config/other/pipewire/volume mute
+
+XF86AudioMicMute
+    amixer sset Capture toggle
+
+super + shift + a
+    ~/.config/other/pipewire/audio-switch
+
+
+# ==BRIGHTNESS==
+
+XF86MonBrightnessUp
+    ~/.config/sxhkd/scripts/brightness up
+
+XF86MonBrightnessDown
+    ~/.config/sxhkd/scripts/brightness down
+
+
+# ==Power Menu Management==
+
+XF86PowerOff
+    ~/.config/sxhkd/scripts/powermenu
+
+super + p
+    ~/.config/sxhkd/scripts/power-profiles
+
+# == END ==
+
+
+# == BSWPM ==
+# Reload BSPWM
+super + alt + r
+    bspc wm -r
+
+# Kill window
+super + q
+    bspc node -c
+
+# Fullscreen
+super + f
+    bspc node -t fullscreen
+
+super + shift + f
+    bspc node -t tiled
+
+# Floating toggle
+super + space
+    bspc node -t floating
+
+super + shift + space
+    bspc node -t ~floating
+
+# Move focus
+super + {h,j,k,l}
+    bspc node -f {west,south,north,east}
+
+# Swap windows
+super + shift + {h,j,k,l}
+    bspc node -s {west,south,north,east}
+
+# Resize
+# h & k
+super + alt + {h,j,k,l}
+    bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+
+# j & l
+super + alt + shift + {h,j,k,l}
+    bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
+
+# == END ==
+
+
+# == Workspace ==
+# Workspaces BSPWM
+super + {1,2,3,4,5,6}
+    bspc desktop -f {1,2,3,4,5,6}
+
+super + {7,8,9}
+    bspc desktop -f Desktop{7,8,9}
+
+# Move Workspace
+super + shift + {1,2,3,4,5,6}
+    bspc node -d {1,2,3,4,5,6}
+
+
+# Switch workspace next/prev
+super + Tab
+    bspc desktop -f next
+
+super + shift + Tab
+    bspc desktop -f prev
+
+# == END ==

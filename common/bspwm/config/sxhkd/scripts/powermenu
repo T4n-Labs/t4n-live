@@ -88,7 +88,7 @@ typeset -A menu
 menu=(
   [⏻    Shutdown]="loginctl poweroff"
   [↻   Reboot]="loginctl reboot"
-  [    Suspend]="~/.config/bspwm/sxhkd/scripts/powermenu-suspend"
+  [    Suspend]="~/.config/sxhkd/scripts/powermenu-suspend"
   [    Hibernate]="loginctl hibernate"
   [    Lock]="~/.config/bspwm/scripts/lock"
   [↪   Logout]="bspc quit"

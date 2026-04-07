@@ -281,7 +281,7 @@ build_variant() {
     A11Y_PKGS="espeakup void-live-audio brltty"
     PKGS="dialog cryptsetup lvm2 mdadm void-docs-browse xtools-minimal xmirror chrony tmux xdg-utils $A11Y_PKGS $GRUB_PKGS"
     FILE_PKGS1="tar xz gzip zstd zip unzip 7zip p7zip ntfs-3g ntfsprogs exfat-utils dosfstools btrfs-progs xfsprogs"
-	FILE_PKGS="$FILE_PKGS1 hfsprogs jfsutils nilfs-utils reiserfsprogs udftools"
+	  FILE_PKGS="$FILE_PKGS1 hfsprogs jfsutils nilfs-utils reiserfsprogs udftools"
     FONTS="fontconfig font-misc-misc terminus-font dejavu-fonts-ttf"
     WAYLAND_PKGS="$GFX_WL_PKGS $FONTS orca"
     XORG_PKGS="$GFX_PKGS $FONTS xorg-fonts xorg-server xorg-apps xorg-minimal xorg-input-drivers setxkbmap xauth orca"
@@ -292,7 +292,7 @@ build_variant() {
 
     # Custom By Gh0ST4n
     SERVICES_PKGS="dbus NetworkManager elogind lightdm rtkit power-profiles-daemon"
-    BSPWM0="xorg xf86-input-libinput network-manager alacritty xfce4-terminal rofi dmenu polybar picom Thunar gvfs gvfs-mtp"
+    BSPWM0="xorg xf86-input-libinput network-manager alacritty xfce4-terminal rofi dmenu polybar picom Thunar gvfs gvfs-mtp udisks2"
     BSPWM1="thunar-archive-plugin thunar-media-tags-plugin feh brightnessctl xss-lock betterlockscreen i3lock-color xrdb xdg-user-dirs polkit-gnome"
     BSPWM2="lm_sensors htop btop fastfetch playerctl firefox chromium flameshot galculator geany timeshift xmirror lxappearance polkit"
     BSPWM3="papirus-icon-theme gtk-engine-murrine arc-theme pipewire wireplumber libspa-bluetooth alsa-pipewire libjack-pipewire pavucontrol pamixer"

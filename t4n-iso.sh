@@ -294,7 +294,7 @@ build_variant() {
     SERVICES_PKGS="dbus NetworkManager elogind lightdm rtkit power-profiles-daemon"
     BSPWM0="xorg xf86-input-libinput network-manager-applet alacritty xfce4-terminal rofi dmenu polybar picom Thunar gvfs gvfs-mtp udisks2"
     BSPWM1="thunar-archive-plugin thunar-media-tags-plugin feh brightnessctl xss-lock betterlockscreen i3lock-color xrdb xdg-user-dirs polkit-gnome"
-    BSPWM2="lm_sensors htop btop fastfetch playerctl firefox chromium flameshot galculator geany timeshift xmirror lxappearance polkit"
+    BSPWM2="lm_sensors htop btop fastfetch playerctl firefox flameshot galculator geany timeshift xmirror lxappearance polkit"
     BSPWM3="papirus-icon-theme gtk-engine-murrine arc-theme pipewire wireplumber libspa-bluetooth alsa-pipewire libjack-pipewire pavucontrol pamixer"
 
     BSPWM_PKGS="$BSPWM0 $BSPWM1 $BSPWM2 $BSPWM3 $ADD_PKGS"

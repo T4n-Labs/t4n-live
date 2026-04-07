@@ -280,8 +280,8 @@ build_variant() {
 
     A11Y_PKGS="espeakup void-live-audio brltty"
     PKGS="dialog cryptsetup lvm2 mdadm void-docs-browse xtools-minimal xmirror chrony tmux xdg-utils $A11Y_PKGS $GRUB_PKGS"
-    FILE_PKGS1="tar xz gzip zstd zip unzip 7zip p7zip ntfs-3g ntfsprogs exfat-utils dosfstools btrfs-progs xfsprogs"
-	  FILE_PKGS="$FILE_PKGS1 hfsprogs jfsutils nilfs-utils reiserfsprogs udftools"
+    FILE_PKGS1="tar xz gzip zstd zip unzip 7zip p7zip ntfs-3g ntfs2btrfs exfat-utils dosfstools btrfs-progs xfsprogs"
+	FILE_PKGS="$FILE_PKGS1 hfsprogs jfsutils nilfs-utils reiserfsprogs udftools"
     FONTS="fontconfig font-misc-misc terminus-font dejavu-fonts-ttf"
     WAYLAND_PKGS="$GFX_WL_PKGS $FONTS orca"
     XORG_PKGS="$GFX_PKGS $FONTS xorg-fonts xorg-server xorg-apps xorg-minimal xorg-input-drivers setxkbmap xauth orca"

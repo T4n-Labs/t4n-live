@@ -1,0 +1,1 @@
+sudo ./t4n-iso.sh -a [architecture] -b [variant] -- -p "[package]" -I [Custom Directory] -C "Kernel Command-line Parameters" -o [Output.iso]

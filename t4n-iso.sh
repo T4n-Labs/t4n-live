@@ -231,10 +231,10 @@ include_bspwm() {
   mkdir -p "$INCLUDEDIR"/etc/elogind
 
   # User
-  cp ./common/bspwm/config/* "$INCLUDEDIR"/etc/skel/.config/
-  cp ./common/bspwm/fonts/* "$INCLUDEDIR"/etc/skel/.fonts/
-  cp ./common/bspwm/icons/* "$INCLUDEDIR"/etc/skel/.icons/
-  cp ./common/bspwm/themes/* "$INCLUDEDIR"/etc/skel/.themes/
+  cp -r ./common/bspwm/config/* "$INCLUDEDIR"/etc/skel/.config/
+  cp -r ./common/bspwm/fonts/* "$INCLUDEDIR"/etc/skel/.fonts/
+  cp -r ./common/bspwm/icons/* "$INCLUDEDIR"/etc/skel/.icons/
+  cp -r ./common/bspwm/themes/* "$INCLUDEDIR"/etc/skel/.themes/
 
   # System
   #cp ./common/bspwm/system/plymouth/* "$INCLUDEDIR"/etc/plymouth
@@ -297,7 +297,7 @@ build_variant() {
     BSPWM2="lm_sensors htop btop fastfetch playerctl firefox chromium flameshot galculator geany timeshift xmirror lxappearance polkit"
     BSPWM3="papirus-icon-theme gtk-engine-murrine arc-theme pipewire wireplumber libspa-bluetooth alsa-pipewire libjack-pipewire pavucontrol pamixer"
 
-    BSPWM="$BSWPM0 $BSWPM1 $BSWPM2 $BSWPM3 $ADD_PKGS"
+    BSPWM_PKGS="$BSPWM0 $BSPWM1 $BSPWM2 $BSPWM3 $ADD_PKGS"
 
     LIGHTDM_SESSION=''
 
@@ -328,7 +328,7 @@ build_variant() {
             fi
         ;;
         bspwm)
-            PKGS="$SERVICES_PKGS $PKGS $FILE_PKGS $BSPWM"
+            PKGS="$SERVICES_PKGS $PKGS $FILE_PKGS $BSPWM_PKGS"
             CLI=yes
             BSPWM=yes
 

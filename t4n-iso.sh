@@ -68,16 +68,6 @@ include_installer() {
     fi
 }
 
-create_user_dirs() {
-    if command -v xdg-user-dirs-update >/dev/null 2>&1; then
-        xdg-user-dirs-update
-    else
-        mkdir -p "$INCLUDEDIR/etc/skel/Documents" "$INCLUDEDIR/etc/skel/Downloads" "$INCLUDEDIR/etc/skel/Pictures" \
-                 "$INCLUDEDIR/etc/skel/Videos" "$INCLUDEDIR/etc/skel/Music" "$INCLUDEDIR/etc/skel/Desktop" \
-                 "$INCLUDEDIR/etc/skel/Templates" "$INCLUDEDIR/etc/skel/Public"
-    fi
-}
-
 setup_pipewire() {
     PKGS="$PKGS pipewire alsa-pipewire"
     case "$ARCH" in
@@ -96,88 +86,6 @@ setup_pipewire() {
     ln -sf /usr/share/alsa/alsa.conf.d/50-pipewire.conf "$INCLUDEDIR"/etc/alsa/conf.d
     ln -sf /usr/share/alsa/alsa.conf.d/99-pipewire-default.conf "$INCLUDEDIR"/etc/alsa/conf.d
 }
-
-# First Config BSPWM
-setup_pipewire_bspwm() {
-    echo "Configuring PipeWire (bspwm)..."
-
-    PKGS="$PKGS pipewire alsa-pipewire"
-
-    case "$ARCH" in
-        asahi*)
-            PKGS="$PKGS asahi-audio"
-            SERVICES="$SERVICES speakersafetyd"
-        ;;
-    esac
-
-    mkdir -p "$INCLUDEDIR/etc/skel/.config/pipewire/pipewire.conf.d"
-    # WirePlumber config
-    if [[ -f /usr/share/examples/wireplumber/10-wireplumber.conf ]]; then
-        ln -sf /usr/share/examples/wireplumber/10-wireplumber.conf \
-            "$INCLUDEDIR/etc/skel/.config/pipewire/pipewire.conf.d/"
-    fi
-    # PipeWire Pulse config
-    if [[ -f /usr/share/examples/pipewire/20-pipewire-pulse.conf ]]; then
-        ln -sf /usr/share/examples/pipewire/20-pipewire-pulse.conf \
-            "$INCLUDEDIR/etc/skel/.config/pipewire/pipewire.conf.d/"
-    fi
-    # ALSA config (system-wide)
-    mkdir -p "$INCLUDEDIR/etc/alsa/conf.d"
-
-    if [[ -f /usr/share/alsa/alsa.conf.d/50-pipewire.conf ]]; then
-        ln -sf /usr/share/alsa/alsa.conf.d/50-pipewire.conf \
-            "$INCLUDEDIR/etc/alsa/conf.d/"
-    fi
-
-    if [[ -f /usr/share/alsa/alsa.conf.d/99-pipewire-default.conf ]]; then
-        ln -sf /usr/share/alsa/alsa.conf.d/99-pipewire-default.conf \
-            "$INCLUDEDIR/etc/alsa/conf.d/"
-    fi
-
-    # Optional: Autostart (kalau WM butuh)
-    mkdir -p "$INCLUDEDIR/etc/xdg/autostart"
-
-    if [[ -f /usr/share/applications/pipewire.desktop ]]; then
-        ln -sf /usr/share/applications/pipewire.desktop \
-            "$INCLUDEDIR/etc/xdg/autostart/"
-    fi
-
-    if [[ -f /usr/share/applications/pipewire-pulse.desktop ]]; then
-        ln -sf /usr/share/applications/pipewire-pulse.desktop \
-            "$INCLUDEDIR/etc/xdg/autostart/"
-    fi
-
-    echo "PipeWire setup complete."
-}
-
-setup_betterlockscreen() {
-    echo "Setting up Betterlockscreen..."
-    local wallpaper="$INCLUDEDIR/.config/bspwm/wallpaper/Void.jpg.jpg"
-    if [[ -f "$wallpaper" ]]; then
-        betterlockscreen -u "$wallpaper" --blur 0.8
-    else
-        echo "Wallpaper tidak ditemukan, lewati."
-    fi
-}
-
-setup_additional() {
-    echo "Menambah Konfigurasi Tambahan..."
-
-    # NetworkManager
-    if [[ -f "$INCLUDEDIR/etc/resolv.conf" ]]; then
-        mkdir -p "$INCLUDEDIR/etc/NetworkManager/conf.d"
-        echo -e "[main]\nrc-manager=unmanaged" > "$INCLUDEDIR/etc/NetworkManager/conf.d/rc-manager.conf"
-    fi
-
-    echo "Konfigurasi Tambahan Telah Selesai..."
-}
-
-setup_bspwm() {
-  setup_pipewire_bspwm
-  setup_betterlockscreen
-  setup_additional
-}
-# End Config BSPWM
 
 include_cli() {
   mkdir -p "$INCLUDEDIR"/etc
@@ -220,29 +128,6 @@ EOF
 #   cp ./common/script/config/lightdm/lightdm-gtk-greeter.conf "$INCLUDEDIR"/etc/lightdm/
 # }
 
-include_bspwm() {
-  # User
-  mkdir -p "$INCLUDEDIR"/etc/skel/.config
-  mkdir -p "$INCLUDEDIR"/etc/skel/.fonts
-  mkdir -p "$INCLUDEDIR"/etc/skel/.icons
-  mkdir -p "$INCLUDEDIR"/etc/skel/.themes
-
-  # System
-  mkdir -p "$INCLUDEDIR"/etc/X11
-  mkdir -p "$INCLUDEDIR"/etc/elogind
-
-  # User
-  cp -r ./common/bspwm/config/* "$INCLUDEDIR"/etc/skel/.config/
-  cp -r ./common/bspwm/fonts/* "$INCLUDEDIR"/etc/skel/.fonts/
-  cp -r ./common/bspwm/icons/* "$INCLUDEDIR"/etc/skel/.icons/
-  cp -r ./common/bspwm/themes/* "$INCLUDEDIR"/etc/skel/.themes/
-
-  # System
-  #cp ./common/bspwm/system/plymouth/* "$INCLUDEDIR"/etc/plymouth
-  cp ./common/bspwm/system/elogind/* "$INCLUDEDIR"/etc/elogind/
-  cp -r ./common/bspwm/other/xorg.conf.d "$INCLUDEDIR"/etc/X11/
-}
-
 build_variant() {
     variant="$1"
     shift
@@ -282,24 +167,14 @@ build_variant() {
     A11Y_PKGS="espeakup void-live-audio brltty"
     PKGS="dialog cryptsetup lvm2 mdadm void-docs-browse xtools-minimal xmirror chrony tmux xdg-utils $A11Y_PKGS $GRUB_PKGS"
     FILE_PKGS1="tar xz gzip zstd zip unzip 7zip p7zip ntfs-3g ntfs2btrfs exfat-utils dosfstools btrfs-progs xfsprogs"
-	  FILE_PKGS="$FILE_PKGS1 hfsprogs jfsutils nilfs-utils reiserfsprogs udftools"
+	FILE_PKGS="$FILE_PKGS1 hfsprogs jfsutils nilfs-utils reiserfsprogs udftools"
     FONTS="fontconfig font-misc-misc terminus-font dejavu-fonts-ttf"
     WAYLAND_PKGS="$GFX_WL_PKGS $FONTS orca"
     XORG_PKGS="$GFX_PKGS $FONTS xorg-fonts xorg-server xorg-apps xorg-minimal xorg-input-drivers setxkbmap xauth orca"
     SERVICES="sshd chronyd"
     
     XFCE_PKGS="lightdm lightdm-gtk-greeter xfce4 elogind gnome-themes-standard gnome-keyring network-manager-applet gvfs-afc gvfs-mtp gvfs-smb udisks2 firefox xfce4-pulseaudio-plugin"
-    ADD_PKGS="tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xtools gparted"
-
-    # Custom By Gh0ST4n
-    SERVICES_PKGS="dbus NetworkManager elogind lightdm rtkit power-profiles-daemon"
-    CORE="bspwm sxhkd picom rofi dmenu polybar picom"
-    BSPWM0="xorg xf86-input-libinput network-manager-applet alacritty xterm xfce4-terminal Thunar gvfs gvfs-mtp udisks2"
-    BSPWM1="thunar-archive-plugin thunar-media-tags-plugin feh brightnessctl xss-lock betterlockscreen i3lock-color xrdb xdg-user-dirs polkit-gnome"
-    BSPWM2="lm_sensors htop btop fastfetch playerctl firefox chromium flameshot galculator geany timeshift xmirror lxappearance polkit"
-    BSPWM3="papirus-icon-theme gtk-engine-murrine arc-theme pipewire wireplumber libspa-bluetooth alsa-pipewire libjack-pipewire pavucontrol pamixer"
-
-    BSPWM_PKGS="$CORE $BSPWM0 $BSPWM1 $BSPWM2 $BSPWM3 $ADD_PKGS"
+    ADD_PKGS="tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xtools gparted fastfetch"
 
     LIGHTDM_SESSION=''
 
@@ -329,14 +204,6 @@ build_variant() {
                 LIGHTDM_SESSION="xfce-wayland"
             fi
         ;;
-        bspwm)
-            PKGS="$SERVICES_PKGS $PKGS $FILE_PKGS $BSPWM_PKGS"
-            CLI=yes
-            BSPWM=yes
-
-            SERVICES="$SERVICES $SERVICES_PKGS polkitd"
-			LIGHTDM_SESSION=bspwm
-        ;;
         *)
             >&2 echo "Unknown variant $variant"
             exit 1
@@ -365,10 +232,6 @@ EOF
     #   include_gui
     # fi
 
-    if [ "$BSPWM" = yes ]; then
-      include_bspwm
-    fi
-
     if [ "$WANT_INSTALLER" = yes ]; then
         include_installer
     else
@@ -380,15 +243,9 @@ EOF
     case "$variant" in
       base|server)
         echo -e "\033[0;31m[!]\033[0m Without Pipewire"
-        create_user_dirs
-      ;;
-      bspwm)
-        setup_bspwm
-        create_user_dirs
       ;;
       *)
         setup_pipewire
-        create_user_dirs
       ;;
     esac
 

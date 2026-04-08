@@ -208,6 +208,7 @@ video:x:44:anon
 input:x:105:anon
 disk:x:6:anon
 wheel:x:10:anon
+users:x:100:
 EOF
 }
 
@@ -281,29 +282,30 @@ build_variant() {
     A11Y_PKGS="espeakup void-live-audio brltty"
     PKGS="dialog cryptsetup lvm2 mdadm void-docs-browse xtools-minimal xmirror chrony tmux xdg-utils $A11Y_PKGS $GRUB_PKGS"
     FILE_PKGS1="tar xz gzip zstd zip unzip 7zip p7zip ntfs-3g ntfs2btrfs exfat-utils dosfstools btrfs-progs xfsprogs"
-	FILE_PKGS="$FILE_PKGS1 hfsprogs jfsutils nilfs-utils reiserfsprogs udftools"
+	  FILE_PKGS="$FILE_PKGS1 hfsprogs jfsutils nilfs-utils reiserfsprogs udftools"
     FONTS="fontconfig font-misc-misc terminus-font dejavu-fonts-ttf"
     WAYLAND_PKGS="$GFX_WL_PKGS $FONTS orca"
     XORG_PKGS="$GFX_PKGS $FONTS xorg-fonts xorg-server xorg-apps xorg-minimal xorg-input-drivers setxkbmap xauth orca"
     SERVICES="sshd chronyd"
     
     XFCE_PKGS="lightdm lightdm-gtk-greeter xfce4 elogind gnome-themes-standard gnome-keyring network-manager-applet gvfs-afc gvfs-mtp gvfs-smb udisks2 firefox xfce4-pulseaudio-plugin"
-    ADD_PKGS="tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xtools gparted jq"
+    ADD_PKGS="tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xtools gparted"
 
     # Custom By Gh0ST4n
     SERVICES_PKGS="dbus NetworkManager elogind lightdm rtkit power-profiles-daemon"
-    BSPWM0="xorg xf86-input-libinput network-manager-applet alacritty xfce4-terminal rofi dmenu polybar picom Thunar gvfs gvfs-mtp udisks2"
+    CORE="bspwm sxhkd picom rofi dmenu polybar picom"
+    BSPWM0="xorg xf86-input-libinput network-manager-applet alacritty xterm xfce4-terminal Thunar gvfs gvfs-mtp udisks2"
     BSPWM1="thunar-archive-plugin thunar-media-tags-plugin feh brightnessctl xss-lock betterlockscreen i3lock-color xrdb xdg-user-dirs polkit-gnome"
-    BSPWM2="lm_sensors htop btop fastfetch playerctl firefox flameshot galculator geany timeshift xmirror lxappearance polkit"
+    BSPWM2="lm_sensors htop btop fastfetch playerctl firefox chromium flameshot galculator geany timeshift xmirror lxappearance polkit"
     BSPWM3="papirus-icon-theme gtk-engine-murrine arc-theme pipewire wireplumber libspa-bluetooth alsa-pipewire libjack-pipewire pavucontrol pamixer"
 
-    BSPWM_PKGS="$BSPWM0 $BSPWM1 $BSPWM2 $BSPWM3 $ADD_PKGS"
+    BSPWM_PKGS="$CORE $BSPWM0 $BSPWM1 $BSPWM2 $BSPWM3 $ADD_PKGS"
 
     LIGHTDM_SESSION=''
 
     case $variant in
         base)
-            PKGS="$PKGS $FILE_PKGS tree bat eza nano NetworkManager polkit elogind"
+            PKGS="$PKGS $FILE_PKGS tree bat exa eza nano NetworkManager polkit elogind"
             CLI=yes
 
             SERVICES="$SERVICES dbus NetworkManager polkitd elogind"

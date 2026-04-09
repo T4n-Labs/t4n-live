@@ -68,6 +68,16 @@ include_installer() {
     fi
 }
 
+create_user_dirs() {
+    if command -v xdg-user-dirs-update >/dev/null 2>&1; then
+        xdg-user-dirs-update
+    else
+        mkdir -p "$INCLUDEDIR/etc/skel/Documents" "$INCLUDEDIR/etc/skel/Downloads" "$INCLUDEDIR/etc/skel/Pictures" \
+                 "$INCLUDEDIR/etc/skel/Videos" "$INCLUDEDIR/etc/skel/Music" "$INCLUDEDIR/etc/skel/Desktop" \
+                 "$INCLUDEDIR/etc/skel/Templates" "$INCLUDEDIR/etc/skel/Public"
+    fi
+}
+
 setup_pipewire() {
     PKGS="$PKGS pipewire alsa-pipewire"
     case "$ARCH" in
@@ -243,9 +253,11 @@ EOF
     case "$variant" in
       base|server)
         echo -e "\033[0;31m[!]\033[0m Without Pipewire"
+        create_user_dirs
       ;;
       *)
         setup_pipewire
+        create_user_dirs
       ;;
     esac
 

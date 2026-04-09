@@ -20,8 +20,8 @@ usage() {
 
 	OPTIONS
 	 -a <arch>     Set architecture (or platform) in the image
-	 -b <variant>  One of base, server, bspwm(Gh0sT4n), xfce,xfce-wayland May be
-                   specified multiple times to build multiple variants.(Default: base).
+	 -b <variant>  One of base, server, xfce,xfce-wayland May be specified 
+                   multiple times to build multiple variants.(Default: base).
 	 -d <date>     Override the datestamp on the generated image (YYYYMMDD format)
 	 -t <arch-date-variant>
 	               Equivalent to setting -a, -b, and -d
@@ -120,14 +120,6 @@ include_cli() {
   cp ./common/script/polkit/30-backlight.rules "$INCLUDEDIR"/etc/udev/rules.d/
 
   cp -r ./common/script/runit/* "$INCLUDEDIR"/etc/runit/
-  cat >> "$INCLUDEDIR"/etc/group <<EOF
-audio:x:29:anon
-video:x:44:anon
-input:x:105:anon
-disk:x:6:anon
-wheel:x:10:anon
-users:x:100:
-EOF
 }
 
 # include_server() {}

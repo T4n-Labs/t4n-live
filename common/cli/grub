@@ -5,6 +5,7 @@ GRUB_TIMEOUT=5
 GRUB_TIMEOUT_STYLE=menu
 
 GRUB_DISTRIBUTOR="T4n OS"
+GRUB_THEME="/usr/share/grub/themes/sleek/theme.txt"
 
 # Kernel parameters
 #GRUB_CMDLINE_LINUX_DEFAULT="loglevel=4"

@@ -107,27 +107,34 @@ include_cli() {
   mkdir -p "$INCLUDEDIR"/etc/udev
   mkdir -p "$INCLUDEDIR"/etc/udev/rules.d
   mkdir -p "$INCLUDEDIR"/root
+  mkdir -p "$INCLUDEDIR"/usr
+  mkdir -p "$INCLUDEDIR"/usr/share
+  mkdir -p "$INCLUDEDIR"/usr/share/grub
+  mkdir -p "$INCLUDEDIR"/usr/share/grub/themes
 
-  cp ./common/script/resolv.conf "$INCLUDEDIR"/etc/
-  cp ./common/script/os-release "$INCLUDEDIR"/etc/
-  cp ./common/script/grub "$INCLUDEDIR"/etc/default/
-  cp ./common/script/.bashrc "$INCLUDEDIR"/etc/skel/
-  cp ./common/script/.bashrc "$INCLUDEDIR"/root/
+  cp ./common/cli/resolv.conf "$INCLUDEDIR"/etc/
+  cp ./common/cli/os-release "$INCLUDEDIR"/etc/
+  cp ./common/cli/grub "$INCLUDEDIR"/etc/default/
+  cp ./common/cli/.bashrc "$INCLUDEDIR"/etc/skel/
+  cp ./common/cli/.bashrc "$INCLUDEDIR"/root/
 
   # Polkit-Rules
-  cp ./common/script/polkit/20-networkmanager.rules "$INCLUDEDIR"/etc/polkit-1/rules.d/
-  cp ./common/script/polkit/10-bspwm.rules "$INCLUDEDIR"/etc/polkit-1/rules.d/
-  cp ./common/script/polkit/30-backlight.rules "$INCLUDEDIR"/etc/udev/rules.d/
+  cp ./common/cli/polkit/20-networkmanager.rules "$INCLUDEDIR"/etc/polkit-1/rules.d/
+  cp ./common/cli/polkit/10-bspwm.rules "$INCLUDEDIR"/etc/polkit-1/rules.d/
+  cp ./common/cli/polkit/30-backlight.rules "$INCLUDEDIR"/etc/udev/rules.d/
 
-  cp -r ./common/script/runit/* "$INCLUDEDIR"/etc/runit/
+  cp -r ./common/cli/runit/* "$INCLUDEDIR"/etc/runit/
+  
+  # Sleek Theme Dark : https://github.com/sandesh236/sleek--themes
+  cp -r ./common/cli/sleek /usr/share/grub/themes/
 }
 
 # include_server() {}
 # include_gui() {
 #   mkdir -p "$INCLUDEDIR"/etc/lightdm/
 #
-#   cp ./common/script/config/lightdm/lightdm.conf "$INCLUDEDIR"/etc/lightdm/
-#   cp ./common/script/config/lightdm/lightdm-gtk-greeter.conf "$INCLUDEDIR"/etc/lightdm/
+#   cp ./common/cli/config/lightdm/lightdm.conf "$INCLUDEDIR"/etc/lightdm/
+#   cp ./common/cli/config/lightdm/lightdm-gtk-greeter.conf "$INCLUDEDIR"/etc/lightdm/
 # }
 
 build_variant() {

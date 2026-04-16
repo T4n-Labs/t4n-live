@@ -109,8 +109,6 @@ include_cli() {
   mkdir -p "$INCLUDEDIR"/root
   mkdir -p "$INCLUDEDIR"/usr
   mkdir -p "$INCLUDEDIR"/usr/share
-  mkdir -p "$INCLUDEDIR"/usr/share/grub
-  mkdir -p "$INCLUDEDIR"/usr/share/grub/themes
 
   cp ./common/cli/resolv.conf "$INCLUDEDIR"/etc/
   cp ./common/cli/os-release "$INCLUDEDIR"/etc/
@@ -124,17 +122,23 @@ include_cli() {
   cp ./common/cli/polkit/30-backlight.rules "$INCLUDEDIR"/etc/udev/rules.d/
 
   cp -r ./common/cli/runit/* "$INCLUDEDIR"/etc/runit/
-  
-  # Sleek Theme Dark : https://github.com/sandesh236/sleek--themes
-  cp -r ./common/cli/sleek /usr/share/grub/themes/
 }
 
 # include_server() {}
 # include_gui() {
 #   mkdir -p "$INCLUDEDIR"/etc/lightdm/
+#  	mkdir -p "$INCLUDEDIR"/usr/share/grub
+#	mkdir -p "$INCLUDEDIR"/usr/share/grub/themes
+#  	mkdir -p "$INCLUDEDIR"/usr/share/t4n-os
+#	mkdir -p "$INCLUDEDIR"/usr/share/t4n-os/wallpaper
 #
 #   cp ./common/cli/config/lightdm/lightdm.conf "$INCLUDEDIR"/etc/lightdm/
 #   cp ./common/cli/config/lightdm/lightdm-gtk-greeter.conf "$INCLUDEDIR"/etc/lightdm/
+
+#Sleek Theme Dark : https://github.com/sandesh236/sleek--themes
+#   cp -r ./common/cli/sleek /usr/share/grub/themes/
+
+#	cp -r ./common/cli/wallpaper /usr/share/t4n-os/wallpaper
 # }
 
 build_variant() {

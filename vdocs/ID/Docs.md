@@ -51,7 +51,6 @@ t4n-live/
 │   │   ├── grub                # Konfigurasi GRUB bootloader
 │   │   ├── os-release          # Identitas OS
 │   │   ├── polkit/             # Aturan PolicyKit (autorisasi sistem)
-│   │   │   ├── 10-bspwm.rules
 │   │   │   ├── 20-networkmanager.rules
 │   │   │   └── 30-backlight.rules
 │   │   ├── resolv.conf         # Konfigurasi DNS
@@ -119,7 +118,7 @@ t4n-live/
 │   └── README.md               # Dokumentasi platform
 ├── pxelinux.cfg/
 │   └── pxelinux.cfg.in         # Template konfigurasi PXE boot
-├── VDocs/                      # Dokumentasi proyek
+├── vdocs/                      # Dokumentasi proyek
 │   ├── index.md
 │   ├── ID/Docs.md              ← Kamu di sini
 │   └── EN/Docs.md
@@ -369,7 +368,6 @@ Berisi aturan **PolicyKit** untuk autorisasi operasi sistem tanpa password:
 
 | File | Fungsi |
 |---|---|
-| `10-bspwm.rules` | Izin untuk window manager BSPWM |
 | `20-networkmanager.rules` | Izin manajemen jaringan untuk user biasa |
 | `30-backlight.rules` | Izin kontrol kecerahan layar |
 

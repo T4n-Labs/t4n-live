@@ -55,7 +55,6 @@ t4n-live/
 │   │   ├── grub                # GRUB bootloader configuration
 │   │   ├── os-release          # OS identity file
 │   │   ├── polkit/             # PolicyKit rules (system authorization)
-│   │   │   ├── 10-bspwm.rules
 │   │   │   ├── 20-networkmanager.rules
 │   │   │   └── 30-backlight.rules
 │   │   ├── resolv.conf         # DNS configuration
@@ -123,7 +122,7 @@ t4n-live/
 │   └── README.md               # Platform documentation
 ├── pxelinux.cfg/
 │   └── pxelinux.cfg.in         # PXE boot config template
-├── VDocs/                      # Project documentation
+├── vdocs/                      # Project documentation
 │   ├── index.md
 │   ├── ID/Docs.md
 │   └── EN/Docs.md              ← You are here
@@ -375,7 +374,6 @@ Contains configuration for the **LightDM** display manager used in desktop varia
 
 | File | Purpose |
 |---|---|
-| `10-bspwm.rules` | Permissions for BSPWM window manager |
 | `20-networkmanager.rules` | Network management for regular users |
 | `30-backlight.rules` | Screen brightness control |
 

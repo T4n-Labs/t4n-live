@@ -55,6 +55,6 @@ VDocs/
 
 <div align="center">
 
-[← Kembali ke README](../README.md) · Built with ❤️ by [T4n-Labs](https://github.com/T4n-Labs)
+[← Kembali Ke README/Return To README.md](../README.md) · Built with ❤️ by [T4n-Labs](https://github.com/T4n-Labs)
 
 </div>

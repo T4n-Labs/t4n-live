@@ -120,7 +120,6 @@ include_cli() {
 
   # Polkit-Rules
   cp ./common/cli/polkit/20-networkmanager.rules "$INCLUDEDIR"/etc/polkit-1/rules.d/
-  cp ./common/cli/polkit/10-bspwm.rules "$INCLUDEDIR"/etc/polkit-1/rules.d/
   cp ./common/cli/polkit/30-backlight.rules "$INCLUDEDIR"/etc/udev/rules.d/
 
   cp -r ./common/cli/runit/* "$INCLUDEDIR"/etc/runit/

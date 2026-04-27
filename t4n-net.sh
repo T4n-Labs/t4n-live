@@ -2,8 +2,6 @@
 #
 #-
 # Copyright (c) 2009-2015 Juan Romero Pardines.
-# Copyright (c) 2026 T4n Tech.
-# Copyright (c) 2026 Gh0sT4n.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without

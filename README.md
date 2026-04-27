@@ -9,7 +9,7 @@
 
 **t4n-live** adalah kumpulan skrip shell untuk membangun live ISO image, rootfs tarball, dan filesystem image berbasis [Void Linux](https://voidlinux.org/) yang dikustomisasi untuk **T4n OS**.
 
-> 📚 Dokumentasi lengkap tersedia di direktori [`VDocs/`](./VDocs/index.md)
+> 📚 Dokumentasi lengkap tersedia di direktori [`vdocs/`](./vdocs/index.md)
 
 ## Struktur Repositori
 
@@ -34,7 +34,7 @@ t4n-live/
 ├── packer/              # Build config Packer (QEMU, VirtualBox, Vagrant)
 ├── platforms/           # Skrip platform-spesifik (pinebookpro, x13s)
 ├── pxelinux.cfg/        # Konfigurasi PXE boot
-├── VDocs/               # Dokumentasi proyek (ID & EN)
+├── vdocs/               # Dokumentasi proyek (ID & EN)
 │   ├── index.md         # Indeks dokumentasi
 │   ├── ID/Docs.md       # Dokumentasi Bahasa Indonesia
 │   └── EN/Docs.md       # Dokumentasi English
@@ -126,9 +126,9 @@ sudo ./t4n-image.sh void-aarch64-ROOTFS-*.tar.xz
 
 Dokumentasi lengkap tersedia di direktori **VDocs**:
 
-- 📄 [Indeks Dokumentasi](./VDocs/index.md)
-- 🇮🇩 [Dokumentasi Bahasa Indonesia](./VDocs/ID/Docs.md)
-- 🇬🇧 [Documentation in English](./VDocs/EN/Docs.md)
+- 📄 [Indeks Dokumentasi](./vdocs/index.md)
+- 🇮🇩 [Dokumentasi Bahasa Indonesia](./vdocs/ID/Docs.md)
+- 🇬🇧 [Documentation in English](./vdocs/EN/Docs.md)
 
 ## Lisensi
 
@@ -141,7 +141,7 @@ Lihat file [COPYING](./COPYING) untuk informasi lisensi.
 
 **t4n-live** is a collection of shell scripts for building live ISO images, rootfs tarballs, and filesystem images based on [Void Linux](https://voidlinux.org/), customized for **T4n OS**.
 
-> 📚 Full documentation is available in the [`VDocs/`](./VDocs/index.md) directory.
+> 📚 Full documentation is available in the [`vdocs/`](./vdocs/index.md) directory.
 
 ## Repository Structure
 
@@ -166,7 +166,7 @@ t4n-live/
 ├── packer/              # Packer build configs (QEMU, VirtualBox, Vagrant)
 ├── platforms/           # Platform-specific scripts (pinebookpro, x13s)
 ├── pxelinux.cfg/        # PXE boot configuration
-├── VDocs/               # Project documentation (ID & EN)
+├── vdocs/               # Project documentation (ID & EN)
 │   ├── index.md         # Documentation index
 │   ├── ID/Docs.md       # Indonesian documentation
 │   └── EN/Docs.md       # English documentation
@@ -258,9 +258,9 @@ sudo ./t4n-image.sh void-rpi-aarch64-PLATFORMFS-*.tar.xz
 
 Full documentation is available in the **VDocs** directory:
 
-- 📄 [Documentation Index](./VDocs/index.md)
-- 🇮🇩 [Dokumentasi Bahasa Indonesia](./VDocs/ID/Docs.md)
-- 🇬🇧 [Documentation in English](./VDocs/EN/Docs.md)
+- 📄 [Documentation Index](./vdocs/index.md)
+- 🇮🇩 [Dokumentasi Bahasa Indonesia](./vdocs/ID/Docs.md)
+- 🇬🇧 [Documentation in English](./vdocs/EN/Docs.md)
 
 ## License
 

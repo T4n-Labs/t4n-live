@@ -4,7 +4,7 @@
 2. Menambah BSPWM Style By Gh0sT4n [06-April-2026]
 
 ## Info :
-1. t4n-live & lib.sh Sudah Complete, variant bspwm & server belum tersedia
+1. t4n-live & lib.sh Sudah Complete, variant bspwm & server belum tersedia.
 
 🇬🇧 English
 ## Changes:

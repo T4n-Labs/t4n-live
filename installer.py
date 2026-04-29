@@ -9,7 +9,7 @@ Fitur baru:
 Jalankan sebagai root: sudo python3 installer.py
 """
 
-import os, sys, re, glob, shutil, subprocess, threading, atexit
+import os, sys, re, glob, shutil, subprocess, threading
 import tkinter as tk
 from tkinter import ttk, messagebox, font as tkfont
 
@@ -479,25 +479,24 @@ class Backend:
         self._run("sync")
 
     def self_destruct(self, callback=None):
-        """Hapus script installer ini beserta file sementara dari sistem."""
+        """Hapus script installer beserta file sementara langsung dari sistem."""
         script_path = os.path.abspath(sys.argv[0])
-        files_to_delete = [script_path, LOG_FILE, CONF_FILE]
+        deleted = []
+        failed  = []
 
-        def _delete_files():
-            for f in files_to_delete:
-                try:
-                    if os.path.exists(f):
-                        os.remove(f)
-                        with open(LOG_FILE, "a") as log:
-                            log.write(f"[self_destruct] Dihapus: {f}\n")
-                except Exception as e:
-                    pass  # Abaikan error saat menghapus
-
-        # Daftarkan penghapusan saat proses Python keluar
-        atexit.register(_delete_files)
+        for f in [script_path, CONF_FILE]:
+            try:
+                if os.path.exists(f):
+                    os.remove(f)
+                    deleted.append(f)
+            except Exception as e:
+                failed.append(f"{f}: {e}")
 
         if callback:
-            callback(f"Script installer akan dihapus dari sistem setelah keluar.")
+            if deleted:
+                callback(f"Dihapus: {', '.join(deleted)}")
+            if failed:
+                callback(f"Gagal hapus: {', '.join(failed)}")
 
 
 # ─── Widget Kustom ────────────────────────────────────────────────────────────
@@ -1429,6 +1428,11 @@ class InstallPage(BasePage):
 
             self._prog(100, "✓ Instalasi selesai!")
             self._log("✓ T4n OS berhasil diinstal!")
+
+            # ── Self-destruct: hapus script & config sementara ──────────────
+            self._prog(100, "Menghapus script installer dari sistem...")
+            B.self_destruct(self._log)
+
             self.after(800, self.app.go_next)
 
         except Exception as e:
@@ -1459,32 +1463,13 @@ class DonePage(BasePage):
                   "Lepas media instalasi, lalu restart untuk mulai menggunakan T4n OS.")
         ).pack(pady=(0,20))
 
-        # ── Info self-destruct ──────────────────────────────────────────────
-        info_frame = tk.Frame(cont, bg=C["card2"], padx=12, pady=8)
-        info_frame.pack(fill="x", pady=(0,20))
-        tk.Label(info_frame,
-            text="🗑  Script installer akan otomatis dihapus dari sistem setelah Anda keluar atau restart.",
-            bg=C["card2"], fg=C["text_muted"],
-            font=("sans-serif", 9), justify="center", wraplength=440,
-            anchor="center").pack()
-
         btn_row = tk.Frame(cont, bg=C["bg"])
         btn_row.pack()
         StyledButton(btn_row, "Restart Sekarang",
-            command=self._restart_and_clean,
+            command=lambda: os.system("shutdown -r now"),
             primary=True).pack(side="left", padx=8, ipadx=10, ipady=4)
         StyledButton(btn_row, "Keluar ke Desktop",
-            command=self._exit_and_clean).pack(side="left", padx=8, ipadx=10, ipady=4)
-
-    def on_enter(self):
-        # Daftarkan self-destruct saat halaman ini ditampilkan
-        self.app.backend.self_destruct()
-
-    def _restart_and_clean(self):
-        os.system("shutdown -r now")
-
-    def _exit_and_clean(self):
-        sys.exit(0)
+            command=lambda: sys.exit(0)).pack(side="left", padx=8, ipadx=10, ipady=4)
 
 
 # ─── Aplikasi Utama ───────────────────────────────────────────────────────────
@@ -1625,14 +1610,6 @@ def main():
         sys.exit(1)
     open(LOG_FILE, "w").close()
     app = InstallerApp()
-
-    def _on_close():
-        """Tutup window → self-destruct terdaftar via atexit lalu keluar."""
-        app.backend.self_destruct()
-        app.destroy()
-        sys.exit(0)
-
-    app.protocol("WM_DELETE_WINDOW", _on_close)
     app.mainloop()
 
 if __name__ == "__main__":

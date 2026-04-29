@@ -55,15 +55,28 @@ cleanup() {
     rm -rf "$INCLUDEDIR"
 }
 
-include_installer() {
+include_installer_cli() {
     if [ -x installer.sh ]; then
         MKLIVE_VERSION="$(PROGNAME='' version)"
         installer=$(mktemp)
         sed "s/@@MKLIVE_VERSION@@/${MKLIVE_VERSION}/" installer.sh > "$installer"
-        install -Dm755 "$installer" "$INCLUDEDIR"/usr/bin/void-installer
+        install -Dm755 "$installer" "$INCLUDEDIR"/usr/bin/t4n-installer
         rm "$installer"
     else
         echo installer.sh not found >&2
+        exit 1
+    fi
+}
+
+include_installer_gui() {
+    if [ -x installer.py ]; then
+        MKLIVE_VERSION="$(PROGNAME='' version)"
+        installer=$(mktemp)
+        sed "s/@@MKLIVE_VERSION@@/${MKLIVE_VERSION}/" installer.py > "$installer"
+        install -Dm755 "$installer" "$INCLUDEDIR"/usr/bin/t4n-installer-gui
+        rm "$installer"
+    else
+        echo installer.py not found >&2
         exit 1
     fi
 }
@@ -145,12 +158,14 @@ build_variant() {
     # and to work around that would add too much complexity to it
     # thus everyone should just do a chroot install anyways
     WANT_INSTALLER=no
+    WANT_GUI_INSTALLER=no
     case "$ARCH" in
         x86_64*|i686*)
             GRUB_PKGS="grub-i386-efi grub-x86_64-efi"
             GFX_PKGS="xorg-video-drivers xf86-video-intel xf86-video-amdgpu xf86-video-ati"
             GFX_WL_PKGS="mesa-dri"
             WANT_INSTALLER=yes
+            WANT_GUI_INSTALLER=yes
             TARGET_ARCH="$ARCH"
             ;;
         aarch64*)
@@ -240,17 +255,26 @@ EOF
     #   include_gui
     # fi
 
+    # CLI INSTALLER
     if [ "$WANT_INSTALLER" = yes ]; then
-        include_installer
+        include_installer_cli
     else
         mkdir -p "$INCLUDEDIR"/usr/bin
-        printf "#!/bin/sh\necho 'void-installer is not supported on this live image'\n" > "$INCLUDEDIR"/usr/bin/void-installer
-        chmod 755 "$INCLUDEDIR"/usr/bin/void-installer
+        printf "#!/bin/sh\necho 't4n-installer is not supported on this live image'\n" > "$INCLUDEDIR"/usr/bin/void-installer
+        chmod 755 "$INCLUDEDIR"/usr/bin/t4n-installer
+    fi
+
+    # GUI INSTALLER
+    if [ "$WANT_INSTALLER" = yes ]; then
+        include_installer_gui
+    else
+        mkdir -p "$INCLUDEDIR"/usr/bin
+        printf "#!/bin/sh\necho 't4n-installer is not supported on this live image'\n" > "$INCLUDEDIR"/usr/bin/void-installer
+        chmod 755 "$INCLUDEDIR"/usr/bin/t4n-installer-gui
     fi
 
     case "$variant" in
       base|server)
-        echo -e "\033[0;31m[!]\033[0m Without Pipewire"
         create_user_dirs
       ;;
       *)

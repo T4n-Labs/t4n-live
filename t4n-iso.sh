@@ -197,7 +197,7 @@ build_variant() {
     SERVICES="sshd chronyd"
     
     XFCE_PKGS="lightdm lightdm-gtk-greeter xfce4 elogind gnome-themes-standard gnome-keyring network-manager-applet gvfs-afc gvfs-mtp gvfs-smb udisks2 firefox xfce4-pulseaudio-plugin"
-    ADD_PKGS="tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xdg-utils xtools gparted fastfetch"
+    ADD_PKGS="tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xdg-utils xtools gparted fastfetch rsync xfce4-screenshooter"
 
     LIGHTDM_SESSION=''
 
@@ -223,7 +223,7 @@ build_variant() {
             LIGHTDM_SESSION=xfce
 
             if [ "$variant" == "xfce-wayland" ]; then
-                PKGS="$PKGS $WAYLAND_PKGS labwc"
+                PKGS="$PKGS $WAYLAND_PKGS labwc $ADD_PKGS"
                 LIGHTDM_SESSION="xfce-wayland"
             fi
         ;;

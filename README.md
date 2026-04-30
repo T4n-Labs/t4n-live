@@ -44,8 +44,8 @@ t4n-live/
 ├── t4n-platformfs.sh    # Generator PLATFORMFS (platform-spesifik)
 ├── t4n-image.sh         # Generator image ARM (dd-ready)
 ├── t4n-net.sh           # Generator tarball netboot
-├── installer.sh         # Installer el-cheapo x86
-├── release.sh           # Skrip rilis & signing (GitHub CI)
+├── installer.py         # Python Installer T4n OS
+├── installer.sh         # Bash Installer T4n OS
 ├── lib.sh               # Library fungsi bersama
 └── VNote.md             # Catatan pengembangan
 ```
@@ -64,17 +64,17 @@ t4n-live/
 | Skrip | Fungsi |
 |---|---|
 | `t4n-live.sh` | Generator live ISO T4n OS (dasar/minimalis) |
-| `t4n-iso.sh` | Generator live ISO lengkap dengan `void-installer` (i686, x86\_64, aarch64) |
+| `t4n-iso.sh` | Generator live ISO lengkap dengan `t4n-installer` (i686, x86_64, aarch64) |
 | `t4n-rootfs.sh` | Generator rootfs Void Linux untuk semua platform & arsitektur |
 | `t4n-platformfs.sh` | Generator rootfs platform-spesifik (dengan kernel, untuk ARM) |
 | `t4n-image.sh` | Generator image ARM siap-flash (`dd`) |
 | `t4n-net.sh` | Generator tarball netboot/PXE |
-| `installer.sh` | Installer el-cheapo Void Linux/T4n OS untuk x86 |
-| `release.sh` | Berinteraksi dengan GitHub CI untuk build & signing rilis |
+| `installer.py` | Penginstal OS T4n yang ditulis dalam Python |
+| `installer.sh` | Penginstal OS T4n yang ditulis dalam Bash |
 
 ## Quick Start
 
-### Build Live ISO (x86\_64, varian xfce)
+### Build Live ISO (x86_64, varian xfce)
 
 ```bash
 sudo ./t4n-iso.sh -a x86_64 -b xfce
@@ -176,8 +176,8 @@ t4n-live/
 ├── t4n-platformfs.sh    # Platform-specific PLATFORMFS generator
 ├── t4n-image.sh         # ARM image generator (dd-ready)
 ├── t4n-net.sh           # Netboot tarball generator
-├── installer.sh         # El-cheapo x86 installer
-├── release.sh           # Release & signing script (GitHub CI)
+├── installer.py         # Python Installer T4n OS
+├── installer.sh         # Bash installer
 ├── lib.sh               # Shared function library
 └── VNote.md             # Development notes
 ```
@@ -196,17 +196,17 @@ t4n-live/
 | Script | Description |
 |---|---|
 | `t4n-live.sh` | Basic/minimal T4n OS live ISO generator |
-| `t4n-iso.sh` | Full live ISO generator with `void-installer` (i686, x86\_64, aarch64) |
+| `t4n-iso.sh` | Full live ISO generator with `t4n-installer` (i686, x86_64, aarch64) |
 | `t4n-rootfs.sh` | Void Linux rootfs generator for all platforms & architectures |
 | `t4n-platformfs.sh` | Platform-specific rootfs generator (with kernel, for ARM) |
 | `t4n-image.sh` | ARM flash-ready image generator (`dd`) |
 | `t4n-net.sh` | Netboot/PXE tarball generator |
-| `installer.sh` | El-cheapo Void Linux/T4n OS installer for x86 |
-| `release.sh` | Interacts with GitHub CI to build & sign release images |
+| `installer.py` | T4n OS installer written Python |
+| `installer.sh` | T4n OS installer written Bash |
 
 ## Quick Start
 
-### Build a Live ISO (x86\_64, xfce variant)
+### Build a Live ISO (x86_64, xfce variant)
 
 ```bash
 sudo ./t4n-iso.sh -a x86_64 -b xfce

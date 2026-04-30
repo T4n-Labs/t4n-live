@@ -31,14 +31,13 @@
 | Script | Description |
 |---|---|
 | `t4n-live.sh` | Basic/minimal T4n OS live ISO generator |
-| `t4n-iso.sh` | Full live ISO generator with `void-installer` |
-| `t4n-rootfs.sh` | ROOTFS tarball generator for all architectures |
-| `t4n-platformfs.sh` | Platform-specific PLATFORMFS generator (rootfs + kernel, for ARM) |
+| `t4n-iso.sh` | Full live ISO generator with `t4n-installer` (i686, x86_64, aarch64) |
+| `t4n-rootfs.sh` | Void Linux rootfs generator for all platforms & architectures |
+| `t4n-platformfs.sh` | Platform-specific rootfs generator (with kernel, for ARM) |
 | `t4n-image.sh` | ARM flash-ready image generator (`dd`) |
 | `t4n-net.sh` | Netboot/PXE tarball generator |
-| `installer.sh` | El-cheapo Void Linux/T4n OS installer for x86 |
-| `release.sh` | Build & signing images for GitHub CI |
-| `lib.sh` | Shared function library (used by other scripts) |
+| `installer.py` | T4n OS installer written Python |
+| `installer.sh` | T4n OS installer written Bash |
 
 ---
 
@@ -132,9 +131,9 @@ t4n-live/
 ├── t4n-platformfs.sh
 ├── t4n-image.sh
 ├── t4n-net.sh
-├── installer.sh
-├── release.sh
-├── lib.sh
+├── installer.py                # Python Installer T4n OS
+├── installer.sh                # Bash installer
+├── lib.sh                      # Shared function library
 └── VNote.md                    # Internal development notes
 ```
 
@@ -154,7 +153,7 @@ t4n-live/
 
 ### 1. Building a Live ISO
 
-**Full ISO** (recommended — includes `void-installer` and additional utilities):
+**Full ISO** (recommended — includes `t4n-installer/t4n-installer-gui` and additional utilities):
 
 ```bash
 sudo ./t4n-iso.sh -a x86_64 -b xfce

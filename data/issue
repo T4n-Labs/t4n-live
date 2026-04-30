@@ -1,6 +1,6 @@
 ###############################################################################
 
-Welcome to the Void Linux Live system. Two users are available to log in:
+Welcome to the T4n OS Live system. Two users are available to log in:
 
 	- root:voidlinux
 	- anon:voidlinux
@@ -10,7 +10,8 @@ without a password.
 
 To start the installation please type:
 
-    # void-installer
+    # t4n-installer 	(CLI)
+	# t4n-installer-gui (GUI)
 
 and follow the on-screen instructions. To install additional software make
 sure to configure your network interface and then use:
@@ -21,7 +22,7 @@ sure to configure your network interface and then use:
 The Void Linux Handbook is also available for offline access in multiple
 formats, and can be accessed with the `void-docs(1)` utility.
 
-Thanks for using Void Linux.
+Thanks for using T4n OS.
 
     https://www.voidlinux.org
     https://T4n-Labs.github.io/t4n-os

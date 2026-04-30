@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
 """
-T4n OS / Void Linux GUI Installer  — v2.0
-Fitur baru:
-  1. Jaringan via NetworkManager (nmcli)
-  2. Partisi via GParted (GUI) + cfdisk/fdisk fallback
-  3. Password root: sama dengan user atau buat sendiri
-  4. Pilihan panel login: LightDM / SDDM / TTY autologin / Tanpa DM
-Jalankan sebagai root: sudo python3 installer.py
+T4n OS / Void Linux GUI Installer  — v0.0.4
+Run as root: sudo python3 installer.py
 """
 
 import os, sys, re, glob, shutil, subprocess, threading

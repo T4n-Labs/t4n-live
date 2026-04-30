@@ -29,14 +29,13 @@
 | Skrip | Fungsi |
 |---|---|
 | `t4n-live.sh` | Generator live ISO T4n OS (dasar/minimalis) |
-| `t4n-iso.sh` | Generator live ISO lengkap dengan `void-installer` |
-| `t4n-rootfs.sh` | Generator ROOTFS tarball untuk semua arsitektur |
-| `t4n-platformfs.sh` | Generator PLATFORMFS (rootfs + kernel, untuk ARM) |
+| `t4n-iso.sh` | Generator live ISO lengkap dengan `t4n-installer` (i686, x86_64, aarch64) |
+| `t4n-rootfs.sh` | Generator rootfs Void Linux untuk semua platform & arsitektur |
+| `t4n-platformfs.sh` | Generator rootfs platform-spesifik (dengan kernel, untuk ARM) |
 | `t4n-image.sh` | Generator image ARM siap-flash (`dd`) |
 | `t4n-net.sh` | Generator tarball netboot/PXE |
-| `installer.sh` | Installer el-cheapo Void Linux/T4n OS untuk x86 |
-| `release.sh` | Build & signing image untuk GitHub CI |
-| `lib.sh` | Library fungsi bersama (dipakai skrip lain) |
+| `installer.py` | Penginstal OS T4n yang ditulis dalam Python |
+| `installer.sh` | Penginstal OS T4n yang ditulis dalam Bash |
 
 ## Struktur Repositori
 
@@ -125,12 +124,13 @@ t4n-live/
 ├── t4n-live.sh
 ├── t4n-iso.sh
 ├── t4n-rootfs.sh
-├── t4n-platformfs.sh
+├── t4n-platformfs.sh├── installer.sh
+├── lib.sh
 ├── t4n-image.sh
 ├── t4n-net.sh
-├── installer.sh
-├── release.sh
-├── lib.sh
+├── installer.py                # Python Installer T4n OS
+├── installer.sh                # Bash Installer T4n OS
+├── lib.sh                      # Library fungsi bersama
 └── VNote.md                    # Catatan pengembangan internal
 ```
 
@@ -150,7 +150,7 @@ t4n-live/
 
 ### 1. Membuat Live ISO
 
-**ISO Lengkap** (disarankan — menyertakan `void-installer` dan utilitas tambahan):
+**ISO Lengkap** (Rekomendasi — menyertakan `t4n-installer/t4n-installer-gui` dan utilitas tambahan):
 
 ```bash
 sudo ./t4n-iso.sh -a x86_64 -b xfce

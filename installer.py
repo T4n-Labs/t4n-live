@@ -1436,10 +1436,11 @@ class InstallPage(BasePage):
             self.after(800, self.app.go_next)
 
         except Exception as e:
-            self._log(f"ERROR: {e}")
-            self._prog(0, f"Instalasi gagal!")
-            self.after(0, lambda: messagebox.showerror(
-                "Instalasi Gagal", f"{e}\n\nLog: {LOG_FILE}"))
+            err_msg = str(e)
+            self._log(f"ERROR: {err_msg}")
+            self._prog(0, "Instalasi gagal!")
+            self.after(0, lambda m=err_msg: messagebox.showerror(
+                "Instalasi Gagal", f"{m}\n\nLog: {LOG_FILE}"))
             self.after(0, lambda: self.app.set_nav_enabled(True))
 
 

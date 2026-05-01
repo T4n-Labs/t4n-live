@@ -5,8 +5,8 @@
 *.tar.gz
 *.box
 *.wsl
-xbps-cache
-xbps-cachedir*
+xbps-cache/
+xbps-cachedir*/
 stamps*
 !dracut/*/*.sh
 !packer/scripts/*.sh

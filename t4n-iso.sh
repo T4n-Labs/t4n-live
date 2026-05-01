@@ -191,13 +191,13 @@ build_variant() {
     PKGS="dialog cryptsetup lvm2 mdadm void-docs-browse xtools-minimal xmirror chrony tmux xdg-utils $A11Y_PKGS $GRUB_PKGS"
     FILE_PKGS1="tar xz gzip zstd zip unzip 7zip p7zip ntfs-3g ntfs2btrfs exfat-utils dosfstools btrfs-progs xfsprogs"
 	FILE_PKGS="$FILE_PKGS1 hfsprogs jfsutils nilfs-utils reiserfsprogs udftools"
-    FONTS="fontconfig font-misc-misc terminus-font dejavu-fonts-ttf"
+    FONTS="fontconfig nerd-fonts nerd-fonts-ttf nerd-fonts-otf nerd-fonts-symbols-ttf"
     WAYLAND_PKGS="$GFX_WL_PKGS $FONTS orca"
-    XORG_PKGS="$GFX_PKGS $FONTS xorg-fonts xorg-server xorg-apps xorg-minimal xorg-input-drivers setxkbmap xauth orca"
+    XORG_PKGS="$GFX_PKGS $FONTS xorg-fonts xorg-server xorg-apps xorg-minimal xorg-input-drivers setxkbmap xauth orca font-misc-misc"
     SERVICES="sshd chronyd"
     
     XFCE_PKGS="lightdm lightdm-gtk-greeter xfce4 elogind gnome-themes-standard gnome-keyring network-manager-applet gvfs-afc gvfs-mtp gvfs-smb udisks2 firefox xfce4-pulseaudio-plugin"
-    ADD_PKGS="tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xdg-utils xtools gparted fastfetch rsync xfce4-screenshooter python3-tkinter nerd-fonts nerd-fonts-otf nerd-fonts-symbols-ttf nerd-fonts-ttf"
+    ADD_PKGS="tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xdg-utils xtools gparted fastfetch rsync xfce4-screenshooter python3-tkinter" 
 
     LIGHTDM_SESSION=''
 

@@ -197,7 +197,7 @@ build_variant() {
     SERVICES="sshd chronyd"
     
     XFCE_PKGS="lightdm lightdm-gtk-greeter xfce4 elogind gnome-themes-standard gnome-keyring network-manager-applet gvfs-afc gvfs-mtp gvfs-smb udisks2 firefox xfce4-pulseaudio-plugin"
-    ADD_PKGS="tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xdg-utils xtools gparted fastfetch rsync xfce4-screenshooter"
+    ADD_PKGS="tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xdg-utils xtools gparted fastfetch rsync xfce4-screenshooter python3-tkinter"
 
     LIGHTDM_SESSION=''
 

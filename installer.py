@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-T4n OS / Void Linux GUI Installer  — v0.0.4
+T4n OS / Void Linux GUI Installer  — v0.0.1 (Alpha Version)
 Run as root: sudo python3 installer.py
 """
 
@@ -14,7 +14,7 @@ TARGETDIR   = "/mnt/target"
 LOG_FILE    = "/tmp/t4n-installer.log"
 CONF_FILE   = "/tmp/.t4n-installer.conf"
 APP_TITLE   = "T4n OS Installer"
-APP_VERSION = "2.0.0"
+APP_VERSION = "0.0.1 (Alpha Version)"
 
 C = {
     "bg"         : "#111827",

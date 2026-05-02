@@ -211,7 +211,7 @@ build_variant() {
 
     case $variant in
         base)
-            PKGS="$PKGS $FILE_PKGS fastfetch tree bat exa eza nano NetworkManager polkit elogind"
+            PKGS="$PKGS $FILE_PKGS fastfetch tree bat exa eza nano NetworkManager polkit"
             CLI=yes
 
             SERVICES="$SERVICES dbus NetworkManager polkitd"

@@ -187,17 +187,25 @@ build_variant() {
             ;;
     esac
 
+	# CUSTOM
+	FILE_PKGS1="tar xz gzip zstd zip unzip 7zip p7zip ntfs-3g ntfs2btrfs exfat-utils dosfstools btrfs-progs xfsprogs"
+	FILE_PKGS="$FILE_PKGS1 hfsprogs jfsutils nilfs-utils reiserfsprogs udftools"
+	NOTO="noto-fonts-cjk noto-fonts-cjk-sans noto-fonts-cjk-sans-variable noto-fonts-cjk-serif noto-fonts-cjk-serif-variable noto-fonts-cjk-variable noto-fonts-emoji noto-fonts-ttf noto-fonts-ttf-extra noto-fonts-ttf-variable"
+    FONTS="fontconfig $NOTO font-firacode font-fira-otf font-fira-ttf font-awesome font-awesome5 font-awesome6"
+	ICON="papirus-folders papirus-icon-theme"
+	THEME="arc-theme arc-theme tint"
+    ADD_PKGS="$ICON $THEME tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xdg-utils xtools gparted fastfetch rsync xfce4-screenshooter python3-tkinter xcursor-vanilla-dmz-aa" 
+
+	# DEFAULT
     A11Y_PKGS="espeakup void-live-audio brltty"
     PKGS="dialog cryptsetup lvm2 mdadm void-docs-browse xtools-minimal xmirror chrony tmux xdg-utils $A11Y_PKGS $GRUB_PKGS"
-    FILE_PKGS1="tar xz gzip zstd zip unzip 7zip p7zip ntfs-3g ntfs2btrfs exfat-utils dosfstools btrfs-progs xfsprogs"
-	FILE_PKGS="$FILE_PKGS1 hfsprogs jfsutils nilfs-utils reiserfsprogs udftools"
-    FONTS="fontconfig font-firacode font-iosevka font-sarasa-gothic ttf-ubuntu-font-family adwaita-fonts"
     WAYLAND_PKGS="$GFX_WL_PKGS $FONTS orca"
     XORG_PKGS="$GFX_PKGS $FONTS xorg-fonts xorg-server xorg-apps xorg-minimal xorg-input-drivers setxkbmap xauth orca font-misc-misc"
+
+	# VARIANT
+	XFCE_PKGS="lightdm lightdm-gtk-greeter elogind xfce4 xfce4-pulseaudio-plugin gnome-themes-standard gnome-keyring network-manager-applet firefox gvfs-afc gvfs-mtp gvfs-smb udisks2"
     SERVICES="sshd chronyd"
     
-    XFCE_PKGS="lightdm lightdm-gtk-greeter xfce4 elogind gnome-themes-standard gnome-keyring network-manager-applet gvfs-afc gvfs-mtp gvfs-smb udisks2 firefox xfce4-pulseaudio-plugin"
-    ADD_PKGS="adwaita-icon-theme tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xdg-utils xtools gparted fastfetch rsync xfce4-screenshooter python3-tkinter" 
 
     LIGHTDM_SESSION=''
 

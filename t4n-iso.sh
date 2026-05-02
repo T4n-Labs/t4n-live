@@ -193,7 +193,7 @@ build_variant() {
 	NOTO="noto-fonts-cjk noto-fonts-cjk-sans noto-fonts-cjk-sans-variable noto-fonts-cjk-serif noto-fonts-cjk-serif-variable noto-fonts-cjk-variable noto-fonts-emoji noto-fonts-ttf noto-fonts-ttf-extra noto-fonts-ttf-variable"
     FONTS="fontconfig $NOTO font-firacode font-fira-otf font-fira-ttf font-awesome font-awesome5 font-awesome6"
 	ICON="papirus-folders papirus-icon-theme"
-	THEME="arc-theme arc-theme tint"
+	THEME="arc-theme tint"
     ADD_PKGS="$ICON $THEME tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xdg-utils xtools gparted fastfetch rsync xfce4-screenshooter python3-tkinter xcursor-vanilla-dmz-aa" 
 
 	# DEFAULT

@@ -214,7 +214,7 @@ build_variant() {
             PKGS="$PKGS $FILE_PKGS fastfetch tree bat exa eza nano NetworkManager polkit elogind"
             CLI=yes
 
-            SERVICES="$SERVICES dbus NetworkManager polkitd elogind"
+            SERVICES="$SERVICES dbus NetworkManager polkitd"
         ;;
         # server)
         #     PKGS="$PKGS $FILE_PKGS"

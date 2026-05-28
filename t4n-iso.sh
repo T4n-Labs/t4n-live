@@ -194,7 +194,7 @@ build_variant() {
     FONTS="fontconfig $NOTO font-firacode font-fira-otf font-fira-ttf font-awesome font-awesome5 font-awesome6"
 	ICON="papirus-folders papirus-icon-theme"
 	THEME="arc-theme tint"
-    ADD_PKGS="$ICON $THEME tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xdg-utils xtools gparted fastfetch rsync xfce4-screenshooter python3-tkinter xcursor-vanilla-dmz-aa" 
+    ADD_PKGS="$ICON $THEME tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xdg-utils xtools gparted fastfetch rsync xfce4-screenshooter python3-PyQt5 xcursor-vanilla-dmz-aa" 
 
 	# DEFAULT
     A11Y_PKGS="espeakup void-live-audio brltty"

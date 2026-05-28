@@ -97,7 +97,7 @@ WIDGET_SIZE="10 70"
 DIALOG() {
     rm -f $ANSWER
     dialog --colors --keep-tite --no-shadow --no-mouse \
-        --backtitle "${BOLD}${WHITE}T4n OS installation -- https://www.voidlinux.org (@@MKLIVE_VERSION@@)${RESET}" \
+        --backtitle "${BOLD}${WHITE}Void Linux installation -- https://www.voidlinux.org (@@MKLIVE_VERSION@@)${RESET}" \
         --cancel-label "Back" --aspect 20 "$@" 2>$ANSWER
     return $?
 }
@@ -105,7 +105,7 @@ DIALOG() {
 INFOBOX() {
     # Note: dialog --infobox and --keep-tite don't work together
     dialog --colors --no-shadow --no-mouse \
-        --backtitle "${BOLD}${WHITE}Void Linux installation -- https://t4n-labs.github.io/t4n-os/ (@@MKLIVE_VERSION@@)${RESET}" \
+        --backtitle "${BOLD}${WHITE}Void Linux installation -- https://www.voidlinux.org (@@MKLIVE_VERSION@@)${RESET}" \
         --title "${TITLE}" --aspect 20 --infobox "$@"
 }
 
@@ -192,7 +192,7 @@ iso639_language() {
     oc)  echo "Occitan" ;;
     om)  echo "Oromo" ;;
     pl)  echo "Polish" ;;
-    pt)  echo "Portugese" ;;
+    pt)  echo "Portuguese" ;;
     ro)  echo "Romanian" ;;
     ru)  echo "Russian" ;;
     sk)  echo "Slovak" ;;
@@ -1076,6 +1076,9 @@ as FAT32, mountpoint /boot/efi and at least with 100MB of size." ${MSGBOXSIZE}
 create_filesystems() {
     local mnts dev mntpt fstype fspassno mkfs size rv uuid
 
+    # truncate to avoid doubling up
+    : >"$TARGET_FSTAB"
+
     mnts=$(grep -E '^MOUNTPOINT .*' $CONF_FILE | sort -k 5)
     set -- ${mnts}
     while [ $# -ne 0 ]; do
@@ -1354,6 +1357,13 @@ ${BOLD}Do you want to continue?${RESET}" 20 80 || return
 
     # Create and mount filesystems
     create_filesystems
+
+    # check if there are any files in the root partition, ignoring lost+found
+    if find "$TARGETDIR" -xdev -not -name 'lost+found' -not -type d | read; then
+        DIALOG --msgbox "${BOLD}${RED}ERROR:${RESET} \
+Root partition not empty! Aborting..." ${MSGBOXSIZE}
+        DIE 1
+    fi
 
     SOURCE_DONE="$(get_option SOURCE)"
     # If source not set use defaults.

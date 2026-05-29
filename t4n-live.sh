@@ -24,9 +24,6 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #-
-
-# Note : Script IS COMPLETE
-
 umask 022
 
 . ./lib.sh
@@ -53,7 +50,7 @@ print_step() {
 mount_pseudofs() {
     for f in sys dev proc; do
         mkdir -p "$ROOTFS"/$f
-        mount --rbind /$f "$ROOTFS"/$f
+        mount --rbind /$f "$ROOTFS"/$f --make-rslave
     done
 }
 
@@ -77,10 +74,10 @@ usage() {
 	cat <<-EOH
 	Usage: $PROGNAME [options]
 
-	Generates a basic live ISO image of T4n OS. This ISO image can be written
+	Generates a basic live ISO image of Void Linux. This ISO image can be written
 	to a CD/DVD-ROM or any USB stick.
 
-	To generate a more complete live ISO image, use t4n-iso.sh.
+	To generate a more complete live ISO image, use mkiso.sh.
 
 	OPTIONS
 	 -a <arch>          Set XBPS_ARCH in the ISO image
@@ -103,7 +100,7 @@ usage() {
 	 -C "<arg> ..."     Add additional kernel command line arguments
 	 -P "<platform> ..."
 	                    Platforms to enable for aarch64 EFI ISO images (available: pinebookpro, x13s)
-	 -T <title>         Modify the bootloader title (default: T4n OS)
+	 -T <title>         Modify the bootloader title (default: Void Linux)
 	 -v linux<version>  Install a custom Linux version on ISO image (default: linux metapackage).
 	                    Also accepts linux metapackages (linux-mainline, linux-lts).
 	 -x <script>        Path to a postsetup script to run before generating the initramfs
@@ -222,7 +219,8 @@ generate_initramfs() {
 
     copy_dracut_files "$ROOTFS"
     copy_autoinstaller_files "$ROOTFS"
-    chroot "$ROOTFS" env -i /usr/bin/dracut -N --"${INITRAMFS_COMPRESSION}" \
+    chroot "$ROOTFS" env -i PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin" \
+        /usr/bin/dracut -N --"${INITRAMFS_COMPRESSION}" \
         --add-drivers "ahci" --force-add "vmklive autoinstaller" --omit systemd "/boot/initrd" $KERNELVERSION
     [ $? -ne 0 ] && die "Failed to generate the initramfs"
 
@@ -549,7 +547,7 @@ HOST_ARCH=$(xbps-uhelper arch)
 : ${INITRAMFS_COMPRESSION:=xz}
 : ${SQUASHFS_COMPRESSION:=xz}
 : ${BASE_SYSTEM_PKG:=base-system}
-: ${BOOT_TITLE:="T4n OS"}
+: ${BOOT_TITLE:="Void Linux"}
 : ${LINUX_VERSION:=linux}
 
 XBPS_TARGET_ARCH="$TARGET_ARCH" register_binfmt
@@ -731,5 +729,6 @@ generate_squashfs
 print_step "Generating ISO image..."
 generate_iso_image
 
-hsize=$(du -sh "$OUTPUT_FILE"|awk '{print $1}')
+sync
+hsize=$(stat -c '%s' "$OUTPUT_FILE" | numfmt --to=iec)
 info_msg "Created $(readlink -f "$OUTPUT_FILE") ($hsize) successfully."

@@ -13,6 +13,6 @@ if [ ! $? ] ; then
 fi
 
 case $(cat /tmp/netmenu.action) in
-    "Install") /usr/bin/void-installer ; exec sh ;;
+    "Install") /usr/bin/t4n-installer ; exec sh ;;
     "Shell") exec sh ;;
 esac

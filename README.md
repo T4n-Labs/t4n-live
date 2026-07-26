@@ -1,6 +1,7 @@
 # t4n-live Plan
 
 **Plan** :
+
 *Variant* :
 - Base : [base.md](base.md)
 - XFCE : [xfce.md](xfce.md)

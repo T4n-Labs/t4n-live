@@ -20,8 +20,8 @@ usage() {
 
 	OPTIONS
 	 -a <arch>     Set architecture (or platform) in the image
-	 -b <variant>  One of base, server, xfce,xfce-wayland May be specified 
-                   multiple times to build multiple variants.(Default: base).
+   -b <variant>  One of base, server, xfce, security, cosmic(COMING SOON) May be
+                 specified multiple times to build multiple variants.(Default: base).
 	 -d <date>     Override the datestamp on the generated image (YYYYMMDD format)
 	 -t <arch-date-variant>
 	               Equivalent to setting -a, -b, and -d
@@ -68,18 +68,18 @@ include_installer_cli() {
     fi
 }
 
-include_installer_gui() {
-    if [ -x installer.py ]; then
-        MKLIVE_VERSION="$(PROGNAME='' version)"
-        installer=$(mktemp)
-        sed "s/@@MKLIVE_VERSION@@/${MKLIVE_VERSION}/" installer.py > "$installer"
-        install -Dm755 "$installer" "$INCLUDEDIR"/usr/bin/t4n-installer-gui
-        rm "$installer"
-    else
-        echo installer.py not found >&2
-        exit 1
-    fi
-}
+# include_installer_gui() {
+#     if [ -x installer.py ]; then
+#         MKLIVE_VERSION="$(PROGNAME='' version)"
+#         installer=$(mktemp)
+#         sed "s/@@MKLIVE_VERSION@@/${MKLIVE_VERSION}/" installer.py > "$installer"
+#         install -Dm755 "$installer" "$INCLUDEDIR"/usr/bin/t4n-installer-gui
+#         rm "$installer"
+#     else
+#         echo installer.py not found >&2
+#         exit 1
+#     fi
+# }
 
 create_user_dirs() {
     if command -v xdg-user-dirs-update >/dev/null 2>&1; then
@@ -135,6 +135,7 @@ include_cli() {
   cp ./common/cli/polkit/20-networkmanager.rules "$INCLUDEDIR"/etc/polkit-1/rules.d/
   cp ./common/cli/polkit/30-backlight.rules "$INCLUDEDIR"/etc/udev/rules.d/
 
+  # Runit
   cp -r ./common/cli/runit/* "$INCLUDEDIR"/etc/runit/
   
   # Sleek Theme Dark : https://github.com/sandesh236/sleek--themes
@@ -142,12 +143,31 @@ include_cli() {
 }
 
 # include_server() {}
-# include_gui() {
-#   mkdir -p "$INCLUDEDIR"/etc/lightdm/
-#
-#   cp ./common/cli/config/lightdm/lightdm.conf "$INCLUDEDIR"/etc/lightdm/
-#   cp ./common/cli/config/lightdm/lightdm-gtk-greeter.conf "$INCLUDEDIR"/etc/lightdm/
-# }
+include_gui() {
+  mkdir -p "$INCLUDEDIR"/etc/skel/.config
+  mkdir -p "$INCLUDEDIR"/usr/bin
+  mkdir -p "$INCLUDEDIR"/usr/share/backgrounds
+  mkdir -p "$INCLUDEDIR"/usr/share/backgrounds/t4n-os
+  mkdir -p "$INCLUDEDIR"/usr/share/fonts
+  mkdir -p "$INCLUDEDIR"/usr/share/themes
+  mkdir -p "$INCLUDEDIR"/usr/share/icons
+
+  cp ./common/gui/xfce/script/autostart "$INCLUDEDIR"/usr/bin/
+
+# Wallpaper
+  cp ./common/gui/xfce/assets/wallpapers/* "$INCLUDEDIR"/usr/share/backgrounds/t4n-os/
+
+  # XFCE Config
+  cp -r ./common/gui/xfce/config/* "$INCLUDEDIR"/etc/skel/.config/
+  
+  # fonts
+  cp -r ./common/gui/xfce/assets/fonts/JetBrainsMono "$INCLUDEDIR"/usr/share/fonts/
+  cp -r ./common/gui/xfce/assets/fonts/RobotoMono "$INCLUDEDIR"/usr/share/fonts/
+  # icons
+  cp -r ./common/gui/xfce/assets/icons/Tela/* "$INCLUDEDIR"/usr/share/icons/
+  # Theme
+  cp -r ./common/gui/xfce/assets/themes/Ant-Nebula "$INCLUDEDIR"/usr/share/themes/
+}
 
 build_variant() {
     variant="$1"
@@ -190,50 +210,48 @@ build_variant() {
 	# CUSTOM
 	FILE_PKGS1="tar xz gzip zstd zip unzip 7zip p7zip ntfs-3g ntfs2btrfs exfat-utils dosfstools btrfs-progs xfsprogs"
 	FILE_PKGS="$FILE_PKGS1 hfsprogs jfsutils nilfs-utils reiserfsprogs udftools"
-	NOTO="noto-fonts-cjk noto-fonts-cjk-sans noto-fonts-cjk-sans-variable noto-fonts-cjk-serif noto-fonts-cjk-serif-variable noto-fonts-cjk-variable noto-fonts-emoji noto-fonts-ttf noto-fonts-ttf-extra noto-fonts-ttf-variable"
-    FONTS="fontconfig $NOTO font-firacode font-fira-otf font-fira-ttf font-awesome font-awesome5 font-awesome6"
-	ICON="papirus-folders papirus-icon-theme"
-	THEME="arc-theme tint"
-    ADD_PKGS="$ICON $THEME tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xdg-utils xtools gparted fastfetch rsync xfce4-screenshooter python3-PyQt5 xcursor-vanilla-dmz-aa" 
+  ADD_PKGS="tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xtools gparted fastfetch rsync xfce4-screenshooter" 
 
 	# DEFAULT
-    A11Y_PKGS="espeakup void-live-audio brltty"
-    PKGS="dialog cryptsetup lvm2 mdadm void-docs-browse xtools-minimal xmirror chrony tmux xdg-utils $A11Y_PKGS $GRUB_PKGS"
-    WAYLAND_PKGS="$GFX_WL_PKGS $FONTS orca"
-    XORG_PKGS="$GFX_PKGS $FONTS xorg-fonts xorg-server xorg-apps xorg-minimal xorg-input-drivers setxkbmap xauth orca font-misc-misc"
+  A11Y_PKGS="espeakup void-live-audio brltty"
+  PKGS="dialog cryptsetup lvm2 mdadm void-docs-browse xtools-minimal xmirror chrony tmux xdg-utils $A11Y_PKGS $GRUB_PKGS"
+  FONTS="font-misc-misc terminus-font dejavu-fonts-ttf"
+  WAYLAND_PKGS="$GFX_WL_PKGS $FONTS orca"
+  XORG_PKGS="$GFX_PKGS $FONTS xorg-fonts xorg-server xorg-apps xorg-minimal xorg-input-drivers setxkbmap xauth orca"
 
 	# VARIANT
-	XFCE_PKGS="lightdm lightdm-gtk-greeter elogind xfce4 xfce4-pulseaudio-plugin gnome-themes-standard gnome-keyring network-manager-applet xarchiver firefox gvfs-afc gvfs-mtp gvfs-smb udisks2"
-    SERVICES="sshd chronyd"
+  XFCE_PKGS1="lightdm lightdm-gtk-greeter elogind xfce4 xfce4-pulseaudio-plugin gnome-themes-standard gnome-keyring network-manager-applet xarchiver firefox gvfs-afc gvfs-mtp gvfs-smb udisks2"
+  XFCE_PKGS="$XFCE_PKGS1 conky tilda cava xfce4-whiskermenu-plugin"
+  SERVICES="sshd chronyd"
     
-
     LIGHTDM_SESSION=''
 
     case $variant in
         base)
-            PKGS="$PKGS $FILE_PKGS fastfetch tree bat exa eza nano NetworkManager polkit"
+            PKGS="$PKGS $FILE_PKGS fastfetch tree bat eza nano NetworkManager polkit"
             CLI=yes
 
             SERVICES="$SERVICES dbus NetworkManager polkitd"
         ;;
-        # server)
-        #     PKGS="$PKGS $FILE_PKGS"
-        #     SERVER=yes
-        #
-        #     SERVICES="$SERVICES dhcpcd wpa_supplicant acpid"
-        # ;;
-        xfce*)
-            PKGS="$PKGS $FILE_PKGS $XORG_PKGS $XFCE_PKGS $ADD_PKGS"
+        server)
+            >&2 echo "COMING SOON"
+            exit 1
+        ;;
+        xfce)
+            PKGS="$PKGS $XORG_PKGS $FILE_PKGS $XFCE_PKGS $ADD_PKGS"
             CLI=yes
-            # GUI=yes
+            GUI=yes
 
             SERVICES="$SERVICES dbus lightdm NetworkManager polkitd elogind"
             LIGHTDM_SESSION=xfce
-
-            if [ "$variant" == "xfce-wayland" ]; then
-                PKGS="$PKGS $WAYLAND_PKGS labwc $ADD_PKGS"
-                LIGHTDM_SESSION="xfce-wayland"
-            fi
+        ;;
+        security)
+            >&2 echo "COMING SOON"
+            exit 1
+        ;;
+        cosmic)
+            >&2 echo "COMING SOON"
+            exit 1
         ;;
         *)
             >&2 echo "Unknown variant $variant"
@@ -259,9 +277,9 @@ EOF
     #   include_server
     # fi
 
-    # if [ "$GUI" = yes ]; then
-    #   include_gui
-    # fi
+    if [ "$GUI" = yes ]; then
+      include_gui
+    fi
 
     # CLI INSTALLER
     if [ "$WANT_INSTALLER" = yes ]; then
@@ -273,13 +291,13 @@ EOF
     fi
 
     # GUI INSTALLER
-    if [ "$WANT_INSTALLER" = yes ]; then
-        include_installer_gui
-    else
-        mkdir -p "$INCLUDEDIR"/usr/bin
-        printf "#!/bin/sh\necho 't4n-installer is not supported on this live image'\n" > "$INCLUDEDIR"/usr/bin/void-installer
-        chmod 755 "$INCLUDEDIR"/usr/bin/t4n-installer-gui
-    fi
+    # if [ "$WANT_INSTALLER" = yes ]; then
+    #     include_installer_gui
+    # else
+    #     mkdir -p "$INCLUDEDIR"/usr/bin
+    #     printf "#!/bin/sh\necho 't4n-installer is not supported on this live image'\n" > "$INCLUDEDIR"/usr/bin/void-installer
+    #     chmod 755 "$INCLUDEDIR"/usr/bin/t4n-installer-gui
+    # fi
 
     case "$variant" in
       base|server)

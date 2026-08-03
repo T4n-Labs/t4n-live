@@ -1,0 +1,34 @@
+#!/bin/sh
+# t4n-xfce-firstrun
+# Dijalankan sekali otomatis saat login pertama user baru.
+# Memaksa theme/icon/font/wallpaper ter-apply lewat xfconf-query,
+# jaga-jaga kalau XML skel belum ke-load sempurna oleh xfconfd.
+
+MARKER="$HOME/.config/.t4n-firstrun-done"
+[ -f "$MARKER" ] && exit 0
+
+# Tunggu xfconfd/xfce4-panel siap
+sleep 5
+
+xfconf-query -c xsettings -p /Net/ThemeName -n -t string -s "Ant-Nebula" 2>/dev/null
+xfconf-query -c xfwm4 -p /general/theme -n -t string -s "Ant-Nebula" 2>/dev/null
+xfconf-query -c xsettings -p /Net/IconThemeName -n -t string -s "Tela" 2>/dev/null
+xfconf-query -c xsettings -p /Gtk/FontName -n -t string -s "JetBrainsMono Nerd Font 10" 2>/dev/null
+
+WALLPAPER="/usr/share/backgrounds/t4n-os/desert.jpg"
+if [ -f "$WALLPAPER" ] && command -v xrandr >/dev/null 2>&1; then
+    for mon in $(xrandr --query | awk '/ connected/{print $1}'); do
+        for ws in 0 1 2 3 4; do
+            xfconf-query -c xfce4-desktop -p "/backdrop/screen0/monitor$mon/workspace$ws/last-image" \
+                -n -t string -s "$WALLPAPER" 2>/dev/null
+        done
+    done
+fi
+
+xfce4-panel -r 2>/dev/null
+
+mkdir -p "$HOME/.config"
+touch "$MARKER"
+
+# Hapus diri sendiri dari autostart biar gak jalan lagi tiap login
+rm -f "$HOME/.config/autostart/t4n-xfce-firstrun.desktop"

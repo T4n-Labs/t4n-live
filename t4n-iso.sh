@@ -207,19 +207,19 @@ build_variant() {
             ;;
     esac
 
-	# CUSTOM
-	FILE_PKGS1="tar xz gzip zstd zip unzip 7zip p7zip ntfs-3g ntfs2btrfs exfat-utils dosfstools btrfs-progs xfsprogs"
-	FILE_PKGS="$FILE_PKGS1 hfsprogs jfsutils nilfs-utils reiserfsprogs udftools"
+  # CUSTOM
+  FILE_PKGS1="tar xz gzip zstd zip unzip 7zip p7zip ntfs-3g ntfs2btrfs exfat-utils dosfstools btrfs-progs xfsprogs"
+  FILE_PKGS="$FILE_PKGS1 hfsprogs jfsutils nilfs-utils reiserfsprogs udftools"
   ADD_PKGS="tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xtools gparted fastfetch rsync xfce4-screenshooter" 
 
-	# DEFAULT
+  # DEFAULT
   A11Y_PKGS="espeakup void-live-audio brltty"
   PKGS="dialog cryptsetup lvm2 mdadm void-docs-browse xtools-minimal xmirror chrony tmux xdg-utils $A11Y_PKGS $GRUB_PKGS"
   FONTS="font-misc-misc terminus-font dejavu-fonts-ttf"
   WAYLAND_PKGS="$GFX_WL_PKGS $FONTS orca"
   XORG_PKGS="$GFX_PKGS $FONTS xorg-fonts xorg-server xorg-apps xorg-minimal xorg-input-drivers setxkbmap xauth orca"
 
-	# VARIANT
+  # VARIANT
   XFCE_PKGS1="lightdm lightdm-gtk-greeter elogind xfce4 xfce4-pulseaudio-plugin gnome-themes-standard gnome-keyring network-manager-applet xarchiver firefox gvfs-afc gvfs-mtp gvfs-smb udisks2"
   XFCE_PKGS="$XFCE_PKGS1 conky tilda cava xfce4-whiskermenu-plugin"
   SERVICES="sshd chronyd"

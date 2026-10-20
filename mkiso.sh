@@ -13,16 +13,15 @@ DATE=$(date -u +%Y%m%d)
 
 usage() {
 	cat <<-EOH
-	Usage: $PROGNAME [options ...] [-- mklive options ...]
+	Usage: $PROGNAME [options ...] [-- t4n-live options ...]
 
-	Wrapper script around mklive.sh for several standard flavors of live images.
+	Wrapper script around t4n-live.sh for several standard flavors of live images.
 	Adds void-installer and other helpful utilities to the generated images.
 
 	OPTIONS
 	 -a <arch>     Set architecture (or platform) in the image
-	 -b <variant>  One of base, enlightenment, xfce, mate, cinnamon, gnome, kde,
-	               lxde, lxqt, or xfce-wayland (default: base). May be specified multiple times
-	               to build multiple variants
+   -b <variant>  One of base, server, xfce, security, cosmic(COMING SOON) May be
+                 specified multiple times to build multiple variants.(Default: base).
 	 -d <date>     Override the datestamp on the generated image (YYYYMMDD format)
 	 -t <arch-date-variant>
 	               Equivalent to setting -a, -b, and -d
@@ -30,8 +29,8 @@ usage() {
 	 -h            Show this help and exit
 	 -V            Show version and exit
 
-	Other options can be passed directly to mklive.sh by specifying them after the --.
-	See mklive.sh -h for more details.
+	Other options can be passed directly to t4n-live.sh by specifying them after the --.
+	See t4n-live.sh -h for more details.
 	EOH
 }
 
@@ -56,16 +55,27 @@ cleanup() {
     rm -rf "$INCLUDEDIR"
 }
 
-include_installer() {
+include_installer_cli() {
     if [ -x installer.sh ]; then
         MKLIVE_VERSION="$(PROGNAME='' version)"
         installer=$(mktemp)
         sed "s/@@MKLIVE_VERSION@@/${MKLIVE_VERSION}/" installer.sh > "$installer"
-        install -Dm755 "$installer" "$INCLUDEDIR"/usr/bin/void-installer
+        install -Dm755 "$installer" "$INCLUDEDIR"/usr/bin/t4n-installer
         rm "$installer"
     else
         echo installer.sh not found >&2
         exit 1
+    fi
+}
+
+
+create_user_dirs() {
+    if command -v xdg-user-dirs-update >/dev/null 2>&1; then
+        xdg-user-dirs-update
+    else
+        mkdir -p "$INCLUDEDIR/etc/skel/Documents" "$INCLUDEDIR/etc/skel/Downloads" "$INCLUDEDIR/etc/skel/Pictures" \
+                 "$INCLUDEDIR/etc/skel/Videos" "$INCLUDEDIR/etc/skel/Music" "$INCLUDEDIR/etc/skel/Desktop" \
+                 "$INCLUDEDIR/etc/skel/Templates" "$INCLUDEDIR/etc/skel/Public"
     fi
 }
 
@@ -77,6 +87,7 @@ setup_pipewire() {
             SERVICES="$SERVICES speakersafetyd"
             ;;
     esac
+
     mkdir -p "$INCLUDEDIR"/etc/xdg/autostart
     ln -sf /usr/share/applications/pipewire.desktop "$INCLUDEDIR"/etc/xdg/autostart/
     mkdir -p "$INCLUDEDIR"/etc/pipewire/pipewire.conf.d
@@ -87,21 +98,82 @@ setup_pipewire() {
     ln -sf /usr/share/alsa/alsa.conf.d/99-pipewire-default.conf "$INCLUDEDIR"/etc/alsa/conf.d
 }
 
+include_cli() {
+  mkdir -p "$INCLUDEDIR"/etc
+  mkdir -p "$INCLUDEDIR"/etc/skel
+  mkdir -p "$INCLUDEDIR"/etc/default
+  mkdir -p "$INCLUDEDIR"/etc/runit
+  mkdir -p "$INCLUDEDIR"/etc/polkit-1
+  mkdir -p "$INCLUDEDIR"/etc/polkit-1/rules.d
+  mkdir -p "$INCLUDEDIR"/etc/udev
+  mkdir -p "$INCLUDEDIR"/etc/udev/rules.d
+  mkdir -p "$INCLUDEDIR"/root
+  mkdir -p "$INCLUDEDIR"/usr
+  mkdir -p "$INCLUDEDIR"/usr/share
+  mkdir -p "$INCLUDEDIR"/usr/share/grub
+  mkdir -p "$INCLUDEDIR"/usr/share/grub/themes
+
+  cp ./common/cli/resolv.conf "$INCLUDEDIR"/etc/
+  cp ./common/cli/os-release "$INCLUDEDIR"/etc/
+  cp ./common/cli/grub "$INCLUDEDIR"/etc/default/
+  cp ./common/cli/.bashrc "$INCLUDEDIR"/etc/skel/
+  cp ./common/cli/.bashrc "$INCLUDEDIR"/root/
+
+  # Polkit-Rules
+  cp ./common/cli/polkit/20-networkmanager.rules "$INCLUDEDIR"/etc/polkit-1/rules.d/
+  cp ./common/cli/polkit/30-backlight.rules "$INCLUDEDIR"/etc/udev/rules.d/
+
+  # Runit
+  cp -r ./common/cli/runit/* "$INCLUDEDIR"/etc/runit/
+  
+  # Sleek Theme Dark : https://github.com/sandesh236/sleek--themes
+  cp -r ./common/cli/sleek /usr/share/grub/themes/
+}
+
+# include_server() {}
+include_gui() {
+  mkdir -p "$INCLUDEDIR"/etc/skel/.config
+  mkdir -p "$INCLUDEDIR"/usr/bin
+  mkdir -p "$INCLUDEDIR"/usr/share/backgrounds
+  mkdir -p "$INCLUDEDIR"/usr/share/backgrounds/t4n-os
+  mkdir -p "$INCLUDEDIR"/usr/share/fonts
+  mkdir -p "$INCLUDEDIR"/usr/share/themes
+  mkdir -p "$INCLUDEDIR"/usr/share/icons
+
+  cp ./common/gui/xfce/script/autostart "$INCLUDEDIR"/usr/bin/
+
+# Wallpaper
+  cp ./common/gui/xfce/assets/wallpapers/* "$INCLUDEDIR"/usr/share/backgrounds/t4n-os/
+
+  # XFCE Config
+  cp -r ./common/gui/xfce/config/* "$INCLUDEDIR"/etc/skel/.config/
+  
+  # fonts
+  cp -r ./common/gui/xfce/assets/fonts/JetBrainsMono "$INCLUDEDIR"/usr/share/fonts/
+  cp -r ./common/gui/xfce/assets/fonts/RobotoMono "$INCLUDEDIR"/usr/share/fonts/
+  # icons
+  cp -r ./common/gui/xfce/assets/icons/Tela/* "$INCLUDEDIR"/usr/share/icons/
+  # Theme
+  cp -r ./common/gui/xfce/assets/themes/Ant-Nebula "$INCLUDEDIR"/usr/share/themes/
+}
+
 build_variant() {
     variant="$1"
     shift
-    IMG=void-live-${ARCH}-${DATE}-${variant}.iso
+    IMG=t4n_os-live-${ARCH}-${DATE}-${variant}.iso
 
     # el-cheapo installer is unsupported on arm because arm doesn't install a kernel by default
     # and to work around that would add too much complexity to it
     # thus everyone should just do a chroot install anyways
     WANT_INSTALLER=no
+    WANT_GUI_INSTALLER=no
     case "$ARCH" in
         x86_64*|i686*)
             GRUB_PKGS="grub-i386-efi grub-x86_64-efi"
-            GFX_PKGS="xorg-video-drivers xf86-video-intel"
+            GFX_PKGS="xorg-video-drivers xf86-video-intel xf86-video-amdgpu xf86-video-ati"
             GFX_WL_PKGS="mesa-dri"
             WANT_INSTALLER=yes
+            WANT_GUI_INSTALLER=yes
             TARGET_ARCH="$ARCH"
             ;;
         aarch64*)
@@ -123,18 +195,35 @@ build_variant() {
             ;;
     esac
 
-    A11Y_PKGS="espeakup void-live-audio brltty"
-    PKGS="dialog cryptsetup lvm2 mdadm void-docs-browse xtools-minimal xmirror chrony tmux $A11Y_PKGS $GRUB_PKGS"
-    FONTS="font-misc-misc terminus-font dejavu-fonts-ttf"
-    WAYLAND_PKGS="$GFX_WL_PKGS $FONTS orca"
-    XORG_PKGS="$GFX_PKGS $FONTS xorg-minimal xorg-input-drivers setxkbmap xauth orca"
-    SERVICES="sshd chronyd"
+  # CUSTOM
+  FILE_PKGS1="tar xz gzip zstd zip unzip 7zip p7zip ntfs-3g ntfs2btrfs exfat-utils dosfstools btrfs-progs xfsprogs"
+  FILE_PKGS="$FILE_PKGS1 hfsprogs jfsutils nilfs-utils reiserfsprogs udftools"
+  ADD_PKGS="tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xtools gparted fastfetch rsync xfce4-screenshooter" 
+
+  # DEFAULT
+  A11Y_PKGS="espeakup void-live-audio brltty"
+  PKGS="dialog cryptsetup lvm2 mdadm void-docs-browse xtools-minimal xmirror chrony tmux xdg-utils $A11Y_PKGS $GRUB_PKGS"
+  FONTS="font-misc-misc terminus-font dejavu-fonts-ttf"
+  WAYLAND_PKGS="$GFX_WL_PKGS $FONTS orca"
+  XORG_PKGS="$GFX_PKGS $FONTS xorg-fonts xorg-server xorg-apps xorg-minimal xorg-input-drivers setxkbmap xauth orca"
+
+  # VARIANT
+  XFCE_PKGS1="lightdm lightdm-gtk-greeter elogind xfce4 xfce4-pulseaudio-plugin gnome-themes-standard gnome-keyring network-manager-applet xarchiver firefox gvfs-afc gvfs-mtp gvfs-smb udisks2"
+  XFCE_PKGS="$XFCE_PKGS1 conky tilda cava xfce4-whiskermenu-plugin"
+  SERVICES="sshd chronyd"
 
     LIGHTDM_SESSION=''
 
     case $variant in
         base)
-            SERVICES="$SERVICES dhcpcd wpa_supplicant acpid"
+            PKGS="$PKGS $FILE_PKGS fastfetch tree bat eza nano NetworkManager polkit"
+            CLI=yes
+
+            SERVICES="$SERVICES dbus NetworkManager polkitd"
+        ;;
+        server)
+            >&2 echo "COMING SOON"
+            exit 1
         ;;
         enlightenment)
             PKGS="$PKGS $XORG_PKGS lightdm lightdm-gtk-greeter enlightenment terminology udisks2 firefox"
@@ -142,14 +231,22 @@ build_variant() {
             LIGHTDM_SESSION=enlightenment
         ;;
         xfce*)
-            PKGS="$PKGS $XORG_PKGS lightdm lightdm-gtk-greeter xfce4 gnome-themes-standard gnome-keyring network-manager-applet gvfs-afc gvfs-mtp gvfs-smb udisks2 firefox xfce4-pulseaudio-plugin"
-            SERVICES="$SERVICES dbus lightdm NetworkManager polkitd"
+            PKGS="$PKGS $XORG_PKGS $FILE_PKGS $XFCE_PKGS $ADD_PKGS"
+            SERVICES="$SERVICES dbus lightdm NetworkManager polkitd elogind"
             LIGHTDM_SESSION=xfce
 
             if [ "$variant" == "xfce-wayland" ]; then
                 PKGS="$PKGS $WAYLAND_PKGS labwc"
                 LIGHTDM_SESSION="xfce-wayland"
             fi
+        ;;
+        security)
+            >&2 echo "COMING SOON"
+            exit 1
+        ;;
+        cosmic)
+            >&2 echo "COMING SOON"
+            exit 1
         ;;
         mate)
             PKGS="$PKGS $XORG_PKGS lightdm lightdm-gtk-greeter mate mate-extra gnome-keyring network-manager-applet gvfs-afc gvfs-mtp gvfs-smb udisks2 firefox"
@@ -194,26 +291,54 @@ indicators = ~host;~spacer;~clock;~spacer;~layout;~session;~a11y;~power
 EOF
     fi
 
+    if [ "$CLI" = yes ]; then
+      include_cli
+    fi
+
+    # if [ "$SERVER" = yes ]; then
+    #   include_server
+    # fi
+
+    if [ "$GUI" = yes ]; then
+      include_gui
+    fi
+
+    # CLI INSTALLER
     if [ "$WANT_INSTALLER" = yes ]; then
-        include_installer
+        include_installer_cli
     else
         mkdir -p "$INCLUDEDIR"/usr/bin
-        printf "#!/bin/sh\necho 'void-installer is not supported on this live image'\n" > "$INCLUDEDIR"/usr/bin/void-installer
-        chmod 755 "$INCLUDEDIR"/usr/bin/void-installer
+        printf "#!/bin/sh\necho 't4n-installer is not supported on this live image'\n" > "$INCLUDEDIR"/usr/bin/void-installer
+        chmod 755 "$INCLUDEDIR"/usr/bin/t4n-installer
     fi
 
-    if [ "$variant" != base ]; then
+    # GUI INSTALLER
+    # if [ "$WANT_INSTALLER" = yes ]; then
+    #     include_installer_gui
+    # else
+    #     mkdir -p "$INCLUDEDIR"/usr/bin
+    #     printf "#!/bin/sh\necho 't4n-installer is not supported on this live image'\n" > "$INCLUDEDIR"/usr/bin/void-installer
+    #     chmod 755 "$INCLUDEDIR"/usr/bin/t4n-installer-gui
+    # fi
+
+    case "$variant" in
+      base|server)
+        create_user_dirs
+      ;;
+      *)
         setup_pipewire
-    fi
+        create_user_dirs
+      ;;
+    esac
 
-    ./mklive.sh -a "$TARGET_ARCH" -o "$IMG" -p "$PKGS" -S "$SERVICES" -I "$INCLUDEDIR" \
+    ./t4n-live.sh -a "$TARGET_ARCH" -o "$IMG" -p "$PKGS" -S "$SERVICES" -I "$INCLUDEDIR" \
         ${KERNEL_PKG:+-v $KERNEL_PKG} ${REPO} "$@"
 
 	cleanup
 }
 
-if [ ! -x mklive.sh ]; then
-    echo mklive.sh not found >&2
+if [ ! -x t4n-live.sh ]; then
+    echo t4n-live.sh not found >&2
     exit 1
 fi
 

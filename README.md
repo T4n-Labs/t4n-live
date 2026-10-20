@@ -9,8 +9,9 @@
 
 **t4n-live** adalah kumpulan skrip shell untuk membangun live ISO image, rootfs tarball, dan filesystem image berbasis [Void Linux](https://voidlinux.org/) yang dikustomisasi untuk **T4n OS**.
 
-## Username
+## Username & Password
 username = t4nlabs
+password = t4nlabs
 
 > 📚 Dokumentasi lengkap tersedia di direktori [`vdocs/`](./vdocs/index.md)
 

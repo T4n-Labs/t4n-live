@@ -11,7 +11,7 @@ echo void-live > ${NEWROOT}/etc/hostname
 USERNAME=$(getarg live.user)
 USERSHELL=$(getarg live.shell)
 
-[ -z "$USERNAME" ] && USERNAME=t4nlabs
+[ -z "$USERNAME" ] && USERNAME=t4nos
 [ -x $NEWROOT/bin/bash -a -z "$USERSHELL" ] && USERSHELL=/bin/bash
 [ -z "$USERSHELL" ] && USERSHELL=/bin/sh
 

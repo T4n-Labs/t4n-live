@@ -226,7 +226,7 @@ VAI_configure_autoinstall() {
     timezone="America/Chicago"
     keymap="us"
     libclocale="en_US.UTF-8"
-    username="t4nlabs"
+    username="t4nos"
     end_action="shutdown"
     end_script="/bin/true"
 

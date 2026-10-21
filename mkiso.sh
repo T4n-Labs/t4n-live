@@ -69,9 +69,6 @@ include_installer_cli() {
 }
 
 include_installer_gui() {
-    # Config Calamares + rule polkit (live saja)
-    cp -r ./common/gui/config/etc/. "$INCLUDEDIR"/etc/
-    # Launcher desktop untuk live user
     install -Dm755 ./common/gui/config/desktop/calamares.desktop \
         "$INCLUDEDIR"/etc/skel/Desktop/calamares.desktop
 }
@@ -115,6 +112,7 @@ include_cli() {
   mkdir -p "$INCLUDEDIR"/etc/polkit-1/rules.d
   mkdir -p "$INCLUDEDIR"/etc/udev
   mkdir -p "$INCLUDEDIR"/etc/udev/rules.d
+  mkdir -p "$INCLUDEDIR"/etc/xbps.d
   mkdir -p "$INCLUDEDIR"/root
   mkdir -p "$INCLUDEDIR"/usr
   mkdir -p "$INCLUDEDIR"/usr/share
@@ -125,6 +123,7 @@ include_cli() {
   cp ./common/cli/os-release "$INCLUDEDIR"/etc/
   cp ./common/cli/grub "$INCLUDEDIR"/etc/default/
   cp ./common/cli/.bashrc "$INCLUDEDIR"/etc/skel/
+  cp ./common/cli/config/xbps.d/*.conf "$INCLUDEDIR"/etc/xbps.d/
   cp ./common/cli/.bashrc "$INCLUDEDIR"/root/
 
   # Polkit-Rules
@@ -150,11 +149,12 @@ include_gui() {
   # Wallpaper
   cp ./common/gui/config/wallpapers/* "$INCLUDEDIR"/usr/share/backgrounds/t4n-os/
 
-  # udev-Rules
-  cp ./common/gui/etc/udev/rules.d/30-backlight.rules "$INCLUDEDIR"/etc/udev/rules.d/
+  # Config GUI: calamares, rule polkit, rule udev
+  cp -r ./common/gui/config/etc/. "$INCLUDEDIR"/etc/
 }
 
 xfce() {
+  # script auto
   cp ./common/gui/xfce/script/autostart "$INCLUDEDIR"/usr/bin/
 
   # XFCE Config
@@ -172,6 +172,10 @@ xfce() {
 build_variant() {
     variant="$1"
     shift
+    CLI=no
+    GUI=no
+    GUI_XFCE=no
+    # GUI_COSMIC=no
     IMG=t4n_os-live-${ARCH}-${DATE}-${variant}.iso
 
     # el-cheapo installer is unsupported on arm because arm doesn't install a kernel by default
@@ -238,7 +242,7 @@ build_variant() {
             exit 1
         ;;
         xfce*)
-            PKGS="$PKGS $XORG_PKGS $FILE_PKGS $XFCE_PKGS $ADD_PKGS calamares"
+            PKGS="$PKGS $XORG_PKGS $FILE_PKGS $XFCE_PKGS $ADD_PKGS calamares grub efibootmgr os-prober glibc-locales"
             SERVICES="$SERVICES dbus lightdm NetworkManager polkitd elogind"
             LIGHTDM_SESSION=xfce
             CLI=yes
@@ -282,9 +286,13 @@ EOF
     #   include_server
     # fi
 
-    # GUI CONFIG
+    # GUI for All DE
+    if [ "$GUI" = yes ]; then
+      include_gui          # wallpaper, config/etc (calamares, polkit, udev)
+    fi
+
+    # GUI XFCE CONFIG
     if [ "$GUI_XFCE" = yes ]; then
-      include_gui
       xfce
     fi
 
@@ -297,9 +305,10 @@ EOF
         chmod 755 "$INCLUDEDIR"/usr/bin/t4n-installer
     fi
 
-    # GUI INSTALLER
-    if [ "$WANT_GUI_INSTALLER" = yes ]; then
-        include_installer_gui || include_installer_cli
+    # GUI INSTALLER: all GUI variants on x86
+    if [ "$GUI" = yes ] && [ "$WANT_GUI_INSTALLER" = yes ]; then
+        PKGS="$PKGS calamares grub efibootmgr os-prober glibc-locales"
+        include_installer_gui
     else
         mkdir -p "$INCLUDEDIR"/usr/bin
         printf "#!/bin/sh\necho 't4n-installer is not supported on this live image'\n" > "$INCLUDEDIR"/usr/bin/t4n-installer

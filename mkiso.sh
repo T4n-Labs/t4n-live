@@ -16,7 +16,7 @@ usage() {
 	Usage: $PROGNAME [options ...] [-- t4n-live options ...]
 
 	Wrapper script around t4n-live.sh for several standard flavors of live images.
-	Adds void-installer and other helpful utilities to the generated images.
+	Adds t4n-installer and other helpful utilities to the generated images.
 
 	OPTIONS
 	 -a <arch>     Set architecture (or platform) in the image

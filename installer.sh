@@ -45,7 +45,7 @@ MIRROR_DONE=
 
 TARGETDIR=/mnt/target
 LOG=/dev/tty8
-CONF_FILE=/tmp/.void-installer.conf
+CONF_FILE=/tmp/.t4n-installer.conf
 if [ ! -f $CONF_FILE ]; then
     touch -f $CONF_FILE
 fi
@@ -1372,13 +1372,13 @@ Root partition not empty! Aborting..." ${MSGBOXSIZE}
         . /etc/default/live.conf
         rm -f $TARGETDIR/etc/motd
         rm -f $TARGETDIR/etc/issue
-        rm -f $TARGETDIR/usr/sbin/void-installer
+        rm -f $TARGETDIR/usr/sbin/t4n-installer
         # Remove modified sddm.conf to let sddm use the defaults.
         rm -f $TARGETDIR/etc/sddm.conf
         # Remove live user.
         echo "Removing $USERNAME live user from targetdir ..." >$LOG
         chroot $TARGETDIR userdel -r $USERNAME >$LOG 2>&1
-        rm -f $TARGETDIR/etc/sudoers.d/99-void-live
+        rm -f $TARGETDIR/etc/sudoers.d/99-t4n-live
         sed -i "s,GETTY_ARGS=\"--noclear -a $USERNAME\",GETTY_ARGS=\"--noclear\",g" $TARGETDIR/etc/sv/agetty-tty1/conf
         TITLE="Check $LOG for details ..."
         INFOBOX "Rebuilding initramfs for target ..." 4 60
@@ -1448,7 +1448,7 @@ Root partition not empty! Aborting..." ${MSGBOXSIZE}
         elif [ -n "$_dev" -a "$_type" = "static" ]; then
             # static IP through dhcpcd.
             mv $TARGETDIR/etc/dhcpcd.conf $TARGETDIR/etc/dhcpcd.conf.orig
-            echo "# Static IP configuration set by the void-installer for $_dev." \
+            echo "# Static IP configuration set by the t4n-installer for $_dev." \
                 >$TARGETDIR/etc/dhcpcd.conf
             echo "interface $_dev" >>$TARGETDIR/etc/dhcpcd.conf
             echo "static ip_address=$_ip" >>$TARGETDIR/etc/dhcpcd.conf
@@ -1610,7 +1610,7 @@ if ! command -v dialog >/dev/null; then
 fi
 
 if [ "$(id -u)" != "0" ]; then
-   echo "void-installer must run as root" 1>&2
+   echo "t4n-installer must run as root" 1>&2
    exit 1
 fi
 

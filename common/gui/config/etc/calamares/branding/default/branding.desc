@@ -121,18 +121,18 @@ navigation: widget
 # are visible as buttons there if the corresponding *show* keys
 # are set to "true" (they can also be overridden).
 strings:
-    productName:         "Noid Linux"
-    shortProductName:    "Noid"
+    productName:         "T4n OS"
+    shortProductName:    "T4n OS"
     version:             Rolling
     shortVersion:        Rolling
-    versionedName:       Noid GNU/Linux (Rolling)
-    shortVersionedName:  Noid (Rolling)
-    bootloaderEntryName: Noid
-    productUrl:          https://noid-linux.github.io/
-    supportUrl:          https://matrix.to/#/#noid-support:ch-naseem.com
-    knownIssuesUrl:      https://github.com/noid-linux/noid-mklive/issues
-    releaseNotesUrl:     https://noid-linux.github.io/
-    donateUrl:           https://ch-naseem.com
+    versionedName:       T4n OS GNU/Linux (Rolling)
+    shortVersionedName:  T4n OS (Rolling)
+    bootloaderEntryName: T4nOS
+    productUrl:          https://t4nos.t4nlabs.web.id/
+    supportUrl:          https://discord.gg/yM5s7RWBxq
+    knownIssuesUrl:      https://github.com/T4n-Labs/t4n-live/issues
+    releaseNotesUrl:     https://t4nos.t4nlabs.web.id/
+    donateUrl:           https://kreate.gg/t4nlabs
 
 # These images are loaded from the branding module directory.
 #

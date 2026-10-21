@@ -75,13 +75,9 @@ include_installer_gui() {
 
 
 create_user_dirs() {
-    if command -v xdg-user-dirs-update >/dev/null 2>&1; then
-        xdg-user-dirs-update
-    else
-        mkdir -p "$INCLUDEDIR/etc/skel/Documents" "$INCLUDEDIR/etc/skel/Downloads" "$INCLUDEDIR/etc/skel/Pictures" \
-                 "$INCLUDEDIR/etc/skel/Videos" "$INCLUDEDIR/etc/skel/Music" "$INCLUDEDIR/etc/skel/Desktop" \
-                 "$INCLUDEDIR/etc/skel/Templates" "$INCLUDEDIR/etc/skel/Public"
-    fi
+    mkdir -p "$INCLUDEDIR/etc/skel/Documents" "$INCLUDEDIR/etc/skel/Downloads" "$INCLUDEDIR/etc/skel/Pictures" \
+             "$INCLUDEDIR/etc/skel/Videos" "$INCLUDEDIR/etc/skel/Music" "$INCLUDEDIR/etc/skel/Desktop" \
+             "$INCLUDEDIR/etc/skel/Templates" "$INCLUDEDIR/etc/skel/Public"
 }
 
 setup_pipewire() {

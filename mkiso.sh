@@ -68,6 +68,14 @@ include_installer_cli() {
     fi
 }
 
+include_installer_gui() {
+    # Config Calamares + rule polkit (live saja)
+    cp -r ./common/gui/config/etc/. "$INCLUDEDIR"/etc/
+    # Launcher desktop untuk live user
+    install -Dm755 ./common/gui/config/desktop/calamares.desktop \
+        "$INCLUDEDIR"/etc/skel/Desktop/calamares.desktop
+}
+
 
 create_user_dirs() {
     if command -v xdg-user-dirs-update >/dev/null 2>&1; then
@@ -121,13 +129,12 @@ include_cli() {
 
   # Polkit-Rules
   cp ./common/cli/polkit/20-networkmanager.rules "$INCLUDEDIR"/etc/polkit-1/rules.d/
-  cp ./common/cli/polkit/30-backlight.rules "$INCLUDEDIR"/etc/udev/rules.d/
 
   # Runit
   cp -r ./common/cli/runit/* "$INCLUDEDIR"/etc/runit/
   
   # Sleek Theme Dark : https://github.com/sandesh236/sleek--themes
-  cp -r ./common/cli/sleek /usr/share/grub/themes/
+  cp -r ./common/cli/sleek "$INCLUDEDIR"/usr/share/grub/themes/
 }
 
 # include_server() {}
@@ -140,14 +147,19 @@ include_gui() {
   mkdir -p "$INCLUDEDIR"/usr/share/themes
   mkdir -p "$INCLUDEDIR"/usr/share/icons
 
-  cp ./common/gui/xfce/script/autostart "$INCLUDEDIR"/usr/bin/
+  # Wallpaper
+  cp ./common/gui/config/wallpapers/* "$INCLUDEDIR"/usr/share/backgrounds/t4n-os/
 
-# Wallpaper
-  cp ./common/gui/xfce/assets/wallpapers/* "$INCLUDEDIR"/usr/share/backgrounds/t4n-os/
+  # udev-Rules
+  cp ./common/gui/etc/udev/rules.d/30-backlight.rules "$INCLUDEDIR"/etc/udev/rules.d/
+}
+
+xfce() {
+  cp ./common/gui/xfce/script/autostart "$INCLUDEDIR"/usr/bin/
 
   # XFCE Config
   cp -r ./common/gui/xfce/config/* "$INCLUDEDIR"/etc/skel/.config/
-  
+
   # fonts
   cp -r ./common/gui/xfce/assets/fonts/JetBrainsMono "$INCLUDEDIR"/usr/share/fonts/
   cp -r ./common/gui/xfce/assets/fonts/RobotoMono "$INCLUDEDIR"/usr/share/fonts/
@@ -210,7 +222,7 @@ build_variant() {
   # VARIANT
   XFCE_PKGS1="lightdm lightdm-gtk-greeter elogind xfce4 xfce4-pulseaudio-plugin gnome-themes-standard gnome-keyring network-manager-applet xarchiver firefox gvfs-afc gvfs-mtp gvfs-smb udisks2"
   XFCE_PKGS="$XFCE_PKGS1 conky tilda cava xfce4-whiskermenu-plugin"
-  SERVICES="sshd chronyd"
+  SERVICES="chronyd"
 
     LIGHTDM_SESSION=''
 
@@ -225,15 +237,12 @@ build_variant() {
             >&2 echo "COMING SOON"
             exit 1
         ;;
-        enlightenment)
-            PKGS="$PKGS $XORG_PKGS lightdm lightdm-gtk-greeter enlightenment terminology udisks2 firefox"
-            SERVICES="$SERVICES acpid dhcpcd wpa_supplicant lightdm dbus polkitd"
-            LIGHTDM_SESSION=enlightenment
-        ;;
         xfce*)
-            PKGS="$PKGS $XORG_PKGS $FILE_PKGS $XFCE_PKGS $ADD_PKGS"
+            PKGS="$PKGS $XORG_PKGS $FILE_PKGS $XFCE_PKGS $ADD_PKGS calamares"
             SERVICES="$SERVICES dbus lightdm NetworkManager polkitd elogind"
             LIGHTDM_SESSION=xfce
+            CLI=yes
+            GUI_XFCE=yes
 
             if [ "$variant" == "xfce-wayland" ]; then
                 PKGS="$PKGS $WAYLAND_PKGS labwc"
@@ -247,33 +256,6 @@ build_variant() {
         cosmic)
             >&2 echo "COMING SOON"
             exit 1
-        ;;
-        mate)
-            PKGS="$PKGS $XORG_PKGS lightdm lightdm-gtk-greeter mate mate-extra gnome-keyring network-manager-applet gvfs-afc gvfs-mtp gvfs-smb udisks2 firefox"
-            SERVICES="$SERVICES dbus lightdm NetworkManager polkitd"
-            LIGHTDM_SESSION=mate
-        ;;
-        cinnamon)
-            PKGS="$PKGS $XORG_PKGS lightdm lightdm-gtk-greeter cinnamon gnome-keyring colord gnome-terminal gvfs-afc gvfs-mtp gvfs-smb udisks2 firefox"
-            SERVICES="$SERVICES dbus lightdm NetworkManager polkitd"
-            LIGHTDM_SESSION=cinnamon
-        ;;
-        gnome)
-            PKGS="$PKGS $XORG_PKGS gnome firefox"
-            SERVICES="$SERVICES dbus gdm NetworkManager polkitd"
-        ;;
-        kde)
-            PKGS="$PKGS $XORG_PKGS kde5 konsole firefox dolphin NetworkManager"
-            SERVICES="$SERVICES dbus NetworkManager sddm"
-        ;;
-        lxde)
-            PKGS="$PKGS $XORG_PKGS lxde lightdm lightdm-gtk-greeter gvfs-afc gvfs-mtp gvfs-smb udisks2 firefox"
-            SERVICES="$SERVICES acpid dbus dhcpcd wpa_supplicant lightdm polkitd"
-            LIGHTDM_SESSION=LXDE
-        ;;
-        lxqt)
-            PKGS="$PKGS $XORG_PKGS lxqt sddm gvfs-afc gvfs-mtp gvfs-smb udisks2 firefox"
-            SERVICES="$SERVICES dbus dhcpcd wpa_supplicant sddm polkitd"
         ;;
         *)
             >&2 echo "Unknown variant $variant"
@@ -291,6 +273,7 @@ indicators = ~host;~spacer;~clock;~spacer;~layout;~session;~a11y;~power
 EOF
     fi
 
+    # CLI CONFIG
     if [ "$CLI" = yes ]; then
       include_cli
     fi
@@ -299,8 +282,10 @@ EOF
     #   include_server
     # fi
 
-    if [ "$GUI" = yes ]; then
+    # GUI CONFIG
+    if [ "$GUI_XFCE" = yes ]; then
       include_gui
+      xfce
     fi
 
     # CLI INSTALLER
@@ -308,18 +293,18 @@ EOF
         include_installer_cli
     else
         mkdir -p "$INCLUDEDIR"/usr/bin
-        printf "#!/bin/sh\necho 't4n-installer is not supported on this live image'\n" > "$INCLUDEDIR"/usr/bin/void-installer
+        printf "#!/bin/sh\necho 't4n-installer is not supported on this live image'\n" > "$INCLUDEDIR"/usr/bin/t4n-installer
         chmod 755 "$INCLUDEDIR"/usr/bin/t4n-installer
     fi
 
     # GUI INSTALLER
-    # if [ "$WANT_INSTALLER" = yes ]; then
-    #     include_installer_gui
-    # else
-    #     mkdir -p "$INCLUDEDIR"/usr/bin
-    #     printf "#!/bin/sh\necho 't4n-installer is not supported on this live image'\n" > "$INCLUDEDIR"/usr/bin/void-installer
-    #     chmod 755 "$INCLUDEDIR"/usr/bin/t4n-installer-gui
-    # fi
+    if [ "$WANT_GUI_INSTALLER" = yes ]; then
+        include_installer_gui || include_installer_cli
+    else
+        mkdir -p "$INCLUDEDIR"/usr/bin
+        printf "#!/bin/sh\necho 't4n-installer is not supported on this live image'\n" > "$INCLUDEDIR"/usr/bin/t4n-installer
+        chmod 755 "$INCLUDEDIR"/usr/bin/t4n-installer
+    fi
 
     case "$variant" in
       base|server)

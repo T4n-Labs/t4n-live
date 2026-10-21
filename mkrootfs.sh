@@ -155,6 +155,7 @@ ROOTFS=$(mktemp -d) || die "failed to create tempdir, exiting..."
 # exist.
 mkdir -p "$ROOTFS/var/db/xbps/keys"
 cp keys/*.plist "$ROOTFS/var/db/xbps/keys"
+cp common/cli/config/xbps.d/keys/*.plist "$ROOTFS/var/db/xbps/keys"
 
 # This sets up files that are important for XBPS to work on the new
 # filesystem.  It does not actually install anything.

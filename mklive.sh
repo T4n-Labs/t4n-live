@@ -114,6 +114,7 @@ usage() {
 copy_void_keys() {
     mkdir -p "$1"/var/db/xbps/keys
     cp keys/*.plist "$1"/var/db/xbps/keys
+    cp common/cli/config/xbps.d/keys/*.plist "$1"/var/db/xbps/keys
 }
 
 copy_dracut_files() {

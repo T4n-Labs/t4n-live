@@ -75,7 +75,7 @@ include_installer_gui() {
 
 
 create_user_dirs() {
-    mkdir -p "$INCLUDEDIR/etc/skel/Documents" "$INCLUDEDIR/etc/skel/Downloads" "$INCLUDEDIR/etc/skel/Pictures" \
+    mkdir -p "$INCLUDEDIR/etc/skel/Documents" "$INCLUDEDIR/etc/skel/Downloads" \
              "$INCLUDEDIR/etc/skel/Videos" "$INCLUDEDIR/etc/skel/Music" "$INCLUDEDIR/etc/skel/Desktop" \
              "$INCLUDEDIR/etc/skel/Templates" "$INCLUDEDIR/etc/skel/Public"
 }

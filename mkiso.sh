@@ -71,6 +71,9 @@ include_installer_cli() {
 include_installer_gui() {
     install -Dm755 ./common/gui/config/desktop/calamares.desktop \
         "$INCLUDEDIR"/etc/skel/Desktop/calamares.desktop
+    
+    cp -r ./common/gui/config/etc/calamares \
+        "$INCLUDEDIR"/etc/calamares
 }
 
 

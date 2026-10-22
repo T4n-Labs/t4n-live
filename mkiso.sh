@@ -69,11 +69,25 @@ include_installer_cli() {
 }
 
 include_installer_gui() {
+    install -Dm644 ./common/gui/config/desktop/calamares.desktop \
+        "$INCLUDEDIR"/usr/share/applications/calamares.desktop
+
     install -Dm755 ./common/gui/config/desktop/calamares.desktop \
         "$INCLUDEDIR"/etc/skel/Desktop/calamares.desktop
-    
+
     cp -r ./common/gui/config/etc/calamares \
         "$INCLUDEDIR"/etc/calamares
+
+    mkdir -p "$INCLUDEDIR"/etc/xdg/autostart
+    cat > "$INCLUDEDIR"/etc/xdg/autostart/trust-calamares.desktop << 'EOF'
+[Desktop Entry]
+Type=Application
+Name=Trust Calamares Desktop Launcher
+Exec=bash -c "gio set ~/Desktop/calamares.desktop metadata::trusted true 2>/dev/null; rm -f ~/.config/autostart/trust-calamares.desktop"
+OnlyShowIn=XFCE;
+NoDisplay=true
+EOF
+    chmod 644 "$INCLUDEDIR"/etc/xdg/autostart/trust-calamares.desktop
 }
 
 

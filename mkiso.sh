@@ -77,17 +77,6 @@ include_installer_gui() {
 
     cp -r ./common/gui/config/etc/calamares \
         "$INCLUDEDIR"/etc/calamares
-
-    mkdir -p "$INCLUDEDIR"/etc/xdg/autostart
-    cat > "$INCLUDEDIR"/etc/xdg/autostart/trust-calamares.desktop << 'EOF'
-[Desktop Entry]
-Type=Application
-Name=Trust Calamares Desktop Launcher
-Exec=bash -c "gio set ~/Desktop/calamares.desktop metadata::trusted true 2>/dev/null; rm -f ~/.config/autostart/trust-calamares.desktop"
-OnlyShowIn=XFCE;
-NoDisplay=true
-EOF
-    chmod 644 "$INCLUDEDIR"/etc/xdg/autostart/trust-calamares.desktop
 }
 
 
@@ -157,7 +146,8 @@ include_gui() {
            "$INCLUDEDIR"/usr/share/backgrounds/t4n-os \
            "$INCLUDEDIR"/usr/share/fonts \
            "$INCLUDEDIR"/usr/share/themes \
-           "$INCLUDEDIR"/usr/share/icons
+           "$INCLUDEDIR"/usr/share/icons \
+           "$INCLUDEDIR"/etc/X11/xorg.conf.d
 
   # Wallpaper
   cp ./common/gui/config/wallpapers/* "$INCLUDEDIR"/usr/share/backgrounds/t4n-os/
@@ -168,6 +158,9 @@ include_gui() {
 
 xfce() {
   include_gui
+
+  # Config GUI X11
+  cp -r ./common/gui/xorg.conf.d/* "$INCLUDEDIR"/etc/X11/xorg.conf.d/
 
   # script auto
   cp ./common/gui/xfce/script/autostart "$INCLUDEDIR"/usr/bin/

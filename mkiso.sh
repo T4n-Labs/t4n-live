@@ -100,20 +100,20 @@ setup_pipewire() {
 }
 
 include_cli() {
-  mkdir -p "$INCLUDEDIR"/etc
-  mkdir -p "$INCLUDEDIR"/etc/skel
-  mkdir -p "$INCLUDEDIR"/etc/default
-  mkdir -p "$INCLUDEDIR"/etc/runit
-  mkdir -p "$INCLUDEDIR"/etc/polkit-1
-  mkdir -p "$INCLUDEDIR"/etc/polkit-1/rules.d
-  mkdir -p "$INCLUDEDIR"/etc/udev
-  mkdir -p "$INCLUDEDIR"/etc/udev/rules.d
-  mkdir -p "$INCLUDEDIR"/etc/xbps.d
-  mkdir -p "$INCLUDEDIR"/root
-  mkdir -p "$INCLUDEDIR"/usr
-  mkdir -p "$INCLUDEDIR"/usr/share
-  mkdir -p "$INCLUDEDIR"/usr/share/grub
-  mkdir -p "$INCLUDEDIR"/usr/share/grub/themes
+  mkdir -p "$INCLUDEDIR"/etc \
+           "$INCLUDEDIR"/etc/skel \
+           "$INCLUDEDIR"/etc/default \
+           "$INCLUDEDIR"/etc/runit \
+           "$INCLUDEDIR"/etc/polkit-1 \
+           "$INCLUDEDIR"/etc/polkit-1/rules.d \
+           "$INCLUDEDIR"/etc/udev \
+           "$INCLUDEDIR"/etc/udev/rules.d \
+           "$INCLUDEDIR"/etc/xbps.d \
+           "$INCLUDEDIR"/root \
+           "$INCLUDEDIR"/usr \
+           "$INCLUDEDIR"/usr/share \
+           "$INCLUDEDIR"/usr/share/grub \
+           "$INCLUDEDIR"/usr/share/grub/themes \
 
   cp ./common/cli/resolv.conf "$INCLUDEDIR"/etc/
   cp ./common/cli/os-release "$INCLUDEDIR"/etc/
@@ -134,13 +134,13 @@ include_cli() {
 
 # include_server() {}
 include_gui() {
-  mkdir -p "$INCLUDEDIR"/etc/skel/.config
-  mkdir -p "$INCLUDEDIR"/usr/bin
-  mkdir -p "$INCLUDEDIR"/usr/share/backgrounds
-  mkdir -p "$INCLUDEDIR"/usr/share/backgrounds/t4n-os
-  mkdir -p "$INCLUDEDIR"/usr/share/fonts
-  mkdir -p "$INCLUDEDIR"/usr/share/themes
-  mkdir -p "$INCLUDEDIR"/usr/share/icons
+  mkdir -p "$INCLUDEDIR"/usr/bin \
+           "$INCLUDEDIR"/etc/skel/.config \
+           "$INCLUDEDIR"/usr/share/backgrounds \
+           "$INCLUDEDIR"/usr/share/backgrounds/t4n-os \
+           "$INCLUDEDIR"/usr/share/fonts \
+           "$INCLUDEDIR"/usr/share/themes \
+           "$INCLUDEDIR"/usr/share/icons
 
   # Wallpaper
   cp ./common/gui/config/wallpapers/* "$INCLUDEDIR"/usr/share/backgrounds/t4n-os/
@@ -150,6 +150,8 @@ include_gui() {
 }
 
 xfce() {
+  include_gui
+
   # script auto
   cp ./common/gui/xfce/script/autostart "$INCLUDEDIR"/usr/bin/
 
@@ -238,10 +240,11 @@ build_variant() {
             exit 1
         ;;
         xfce*)
-            PKGS="$PKGS $XORG_PKGS $FILE_PKGS $XFCE_PKGS $ADD_PKGS calamares grub efibootmgr os-prober glibc-locales"
+            PKGS="$PKGS $XORG_PKGS $FILE_PKGS $XFCE_PKGS $ADD_PKGS"
             SERVICES="$SERVICES dbus lightdm NetworkManager polkitd elogind"
             LIGHTDM_SESSION=xfce
             CLI=yes
+            GUI=yes
             GUI_XFCE=yes
 
             if [ "$variant" == "xfce-wayland" ]; then
@@ -284,7 +287,7 @@ EOF
 
     # GUI for All DE
     if [ "$GUI" = yes ]; then
-      include_gui          # wallpaper, config/etc (calamares, polkit, udev)
+      include_gui
     fi
 
     # GUI XFCE CONFIG
@@ -305,10 +308,6 @@ EOF
     if [ "$GUI" = yes ] && [ "$WANT_GUI_INSTALLER" = yes ]; then
         PKGS="$PKGS calamares grub efibootmgr os-prober glibc-locales"
         include_installer_gui
-    else
-        mkdir -p "$INCLUDEDIR"/usr/bin
-        printf "#!/bin/sh\necho 't4n-installer is not supported on this live image'\n" > "$INCLUDEDIR"/usr/bin/t4n-installer
-        chmod 755 "$INCLUDEDIR"/usr/bin/t4n-installer
     fi
 
     case "$variant" in

@@ -15,7 +15,7 @@ usage() {
 	cat <<-EOH
 	Usage: $PROGNAME [options ...] [-- t4n-live options ...]
 
-	Wrapper script around t4n-live.sh for several standard flavors of live images.
+	Wrapper script around mklive.sh for several standard flavors of live images.
 	Adds t4n-installer and other helpful utilities to the generated images.
 
 	OPTIONS
@@ -29,8 +29,8 @@ usage() {
 	 -h            Show this help and exit
 	 -V            Show version and exit
 
-	Other options can be passed directly to t4n-live.sh by specifying them after the --.
-	See t4n-live.sh -h for more details.
+	Other options can be passed directly to mklive.sh by specifying them after the --.
+	See mklive.sh -h for more details.
 	EOH
 }
 
@@ -321,14 +321,14 @@ EOF
       ;;
     esac
 
-    ./t4n-live.sh -a "$TARGET_ARCH" -o "$IMG" -p "$PKGS" -S "$SERVICES" -I "$INCLUDEDIR" \
+    ./mklive.sh -a "$TARGET_ARCH" -o "$IMG" -p "$PKGS" -S "$SERVICES" -I "$INCLUDEDIR" \
         ${KERNEL_PKG:+-v $KERNEL_PKG} ${REPO} "$@"
 
 	cleanup
 }
 
-if [ ! -x t4n-live.sh ]; then
-    echo t4n-live.sh not found >&2
+if [ ! -x mklive.sh ]; then
+    echo mklive.sh not found >&2
     exit 1
 fi
 

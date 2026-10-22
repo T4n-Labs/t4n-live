@@ -222,7 +222,8 @@ build_variant() {
   # CUSTOM
   FILE_PKGS1="tar xz gzip zstd zip unzip 7zip p7zip ntfs-3g ntfs2btrfs exfat-utils dosfstools btrfs-progs xfsprogs"
   FILE_PKGS="$FILE_PKGS1 hfsprogs jfsutils nilfs-utils reiserfsprogs udftools"
-  ADD_PKGS="tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xtools gparted fastfetch rsync xfce4-screenshooter" 
+  ADD_PKGS="tree bat eza nano vim neovim git curl wget zenity tmux fzf ranger base-devel xtools gparted fastfetch rsync xfce4-screenshooter"
+  T4N_PKGS="tpkg"
 
   # DEFAULT
   A11Y_PKGS="espeakup void-live-audio brltty"
@@ -240,7 +241,7 @@ build_variant() {
 
     case $variant in
         base)
-            PKGS="$PKGS $FILE_PKGS fastfetch tree bat eza nano NetworkManager polkit"
+            PKGS="$PKGS $FILE_PKGS $T4N_PKGS fastfetch tree bat eza nano NetworkManager polkit"
             CLI=yes
 
             SERVICES="$SERVICES dbus NetworkManager polkitd"
@@ -250,17 +251,12 @@ build_variant() {
             exit 1
         ;;
         xfce*)
-            PKGS="$PKGS $XORG_PKGS $FILE_PKGS $XFCE_PKGS $ADD_PKGS"
+            PKGS="$PKGS $T4N_PKGS $XORG_PKGS $FILE_PKGS $XFCE_PKGS $ADD_PKGS"
             SERVICES="$SERVICES dbus lightdm NetworkManager polkitd elogind"
             LIGHTDM_SESSION=xfce
             CLI=yes
             GUI=yes
             GUI_XFCE=yes
-
-            if [ "$variant" == "xfce-wayland" ]; then
-                PKGS="$PKGS $WAYLAND_PKGS labwc"
-                LIGHTDM_SESSION="xfce-wayland"
-            fi
         ;;
         security)
             >&2 echo "COMING SOON"

@@ -69,7 +69,7 @@ t4n-live/
 |---|---|
 | `mklive.sh` | Generator live ISO T4n OS (dasar/minimalis) |
 | `mkiso.sh` | Generator live ISO lengkap dengan `t4n-installer` (i686, x86_64, aarch64) |
-| `t4n-rootfs.sh` | Generator rootfs Void Linux untuk semua platform & arsitektur |
+| `mkrootfs.sh` | Generator rootfs Void Linux untuk semua platform & arsitektur |
 | `mkplatformfs.sh` | Generator rootfs platform-spesifik (dengan kernel, untuk ARM) |
 | `mkimage.sh` | Generator image ARM siap-flash (`dd`) |
 | `mknet.sh` | Generator tarball netboot/PXE |
@@ -198,7 +198,7 @@ t4n-live/
 |---|---|
 | `mklive.sh` | Basic/minimal T4n OS live ISO generator |
 | `mkiso.sh` | Full live ISO generator with `t4n-installer` (i686, x86_64, aarch64) |
-| `t4n-rootfs.sh` | Void Linux rootfs generator for all platforms & architectures |
+| `mkrootfs.sh` | Void Linux rootfs generator for all platforms & architectures |
 | `mkplatformfs.sh` | Platform-specific rootfs generator (with kernel, for ARM) |
 | `mkimage.sh` | ARM flash-ready image generator (`dd`) |
 | `mknet.sh` | Netboot/PXE tarball generator |

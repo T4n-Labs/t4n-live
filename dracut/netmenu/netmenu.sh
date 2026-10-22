@@ -1,7 +1,7 @@
 #!/bin/sh
 
 dialog --colors --keep-tite --no-shadow --no-mouse \
-       --backtitle "\Zb\Z7Void Linux installation -- https://www.voidlinux.org\Zn" \
+       --backtitle "\Zb\Z7T4n OS installation -- https://t4nos.t4nlabs.web.id\Zn" \
        --cancel-label "Reboot" --aspect 20 \
        --menu "Select an Action:" 10 50 2 \
        "Install" "Run t4n-installer" \

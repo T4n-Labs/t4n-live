@@ -236,7 +236,8 @@ VAI_configure_autoinstall() {
             xbpsrepository="https://repo-default.voidlinux.org/current/musl"
             ;;
         *)
-            xbpsrepository="https://repo-default.voidlinux.org/current"
+            xbpsrepository="https://repo-default.voidlinux.org/current \
+                            https://t4n-labs.github.io/repo-glibc/x86_64"
             ;;
     esac
 

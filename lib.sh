@@ -324,7 +324,8 @@ rk33xx_flash_uboot() {
 
 # These should all resolve even if they won't have the appropriate
 # repodata files for the selected architecture.
-: "${XBPS_REPOSITORY:=--repository=https://repo-default.voidlinux.org/current \
+: "${XBPS_REPOSITORY:=--repository=https://t4n-labs.github.io/repo-glibc/x86_64 \
+                      --repository=https://repo-default.voidlinux.org/current \
                       --repository=https://repo-default.voidlinux.org/current/musl \
                       --repository=https://repo-default.voidlinux.org/current/aarch64}"
 

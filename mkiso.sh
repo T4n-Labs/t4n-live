@@ -233,7 +233,7 @@ build_variant() {
   XORG_PKGS="$GFX_PKGS $FONTS xorg-fonts xorg-server xorg-apps xorg-minimal xorg-input-drivers setxkbmap xauth orca"
 
   # VARIANT
-  XFCE_PKGS1="lightdm lightdm-gtk-greeter elogind xfce4 xfce4-pulseaudio-plugin gnome-themes-standard gnome-keyring network-manager-applet xarchiver firefox gvfs-afc gvfs-mtp gvfs-smb udisks2"
+  XFCE_PKGS1="lightdm lightdm-gtk-greeter elogind xfce4 xfce4-pulseaudio-plugin gnome-themes-standard gnome-keyring network-manager-applet thunar-archive-plugin xarchiver firefox gvfs-afc gvfs-mtp gvfs-smb udisks2"
   XFCE_PKGS="$XFCE_PKGS1 conky tilda cava xfce4-whiskermenu-plugin"
   SERVICES="chronyd"
 

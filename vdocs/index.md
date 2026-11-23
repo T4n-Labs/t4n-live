@@ -1,6 +1,7 @@
 # VDocs — T4n OS Live Image Documentation
 
 > 🇮🇩 [Bahasa Indonesia](./ID/Docs.md) | 🇬🇧 [English](./EN/Docs.md)
+> 📘 [README (ID)](../README.ID.md) | [README (EN)](../README.md)
 
 Selamat datang di direktori dokumentasi **t4n-live** — generator live image, rootfs, dan installer untuk **T4n OS** berbasis Void Linux.
 
@@ -55,6 +56,6 @@ VDocs/
 
 <div align="center">
 
-[← Kembali Ke README/Return To README.md](../README.md) · Built with ❤️ by [T4n-Labs](https://github.com/T4n-Labs)
+[← README (ID)](../README.ID.md) · [README (EN)](../README.md) · Built with ❤️ by [T4n-Labs](https://github.com/T4n-Labs)
 
 </div>

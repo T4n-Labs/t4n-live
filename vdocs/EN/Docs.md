@@ -2,8 +2,6 @@
 
 > 🇮🇩 [Versi Bahasa Indonesia](../ID/Docs.md) | [← Index](../index.md) | [← README](../../README.md)
 
----
-
 ## Table of Contents
 
 - [Overview](#overview)
@@ -14,74 +12,80 @@
 - [common/ Configuration](#common-configuration)
 - [Kernel Command-line Parameters](#kernel-command-line-parameters)
 - [Packer & Container](#packer--container)
-<!-- - [Release & Signing](#release--signing) -->
+- [Release & CI](#release--ci)
 
 ## Overview
 
-**t4n-live** is the live image and rootfs generator for **T4n OS**, a Linux distribution based on [Void Linux](https://voidlinux.org/). This repository provides a complete toolchain for:
+**t4n-live** is the live image and rootfs generator for **T4n OS**, a Linux distribution based on [Void Linux](https://voidlinux.org/). This repository provides a toolchain for:
 
 - Building bootable live ISO images (USB/CD)
-- Building ROOTFS tarballs for chroot-based installation
+- Building ROOTFS tarballs for chroot-based installation or containers
 - Building flash-ready ARM images for embedded devices (Raspberry Pi, Pinebook Pro, etc.)
 - Building netboot/PXE tarballs
 - Building VM images via Packer (QEMU, VirtualBox, Vagrant)
+
+Default live system credentials: username `t4nos`, password `t4nlabs`.
 
 ### Available Scripts
 
 | Script | Description |
 |---|---|
-| `t4n-live.sh` | Basic/minimal T4n OS live ISO generator |
-| `t4n-iso.sh` | Full live ISO generator with `t4n-installer` (i686, x86_64, aarch64) |
-| `t4n-rootfs.sh` | Void Linux rootfs generator for all platforms & architectures |
-| `t4n-platformfs.sh` | Platform-specific rootfs generator (with kernel, for ARM) |
-| `t4n-image.sh` | ARM flash-ready image generator (`dd`) |
-| `t4n-net.sh` | Netboot/PXE tarball generator |
-| `installer.py` | T4n OS installer written Python |
-| `installer.sh` | T4n OS installer written Bash |
-
----
+| `mklive.sh` | Basic/minimal live ISO generator |
+| `mkiso.sh` | Wrapper around `mklive.sh` for full ISOs with `t4n-installer` (i686, x86_64, aarch64) |
+| `mkrootfs.sh` | Void Linux rootfs generator for all platforms & architectures |
+| `mkplatformfs.sh` | Platform-specific rootfs generator (with kernel, for ARM) |
+| `mkimage.sh` | ARM flash-ready image generator (`dd`) |
+| `mknet.sh` | Netboot/PXE tarball generator |
+| `installer.sh` | T4n OS installer written in Bash |
+| `release.sh` | Release automation via GitHub CI |
 
 ## Repository Structure
 
-```
+```text
 t4n-live/
 ├── common/
-│   ├── cli/                    # Desktop/CLI variant configurations
+│   ├── cli/                    # Desktop/CLI variant configuration
+│   │   ├── .bashrc             # Default shell profile
 │   │   ├── config/
-│   │   │   └── lightdm/        # LightDM display manager configuration
-│   │   │       ├── lightdm-gtk-greeter.conf
-│   │   │       └── lightdm.conf
-│   │   ├── grub                # GRUB bootloader configuration
+│   │   │   ├── lightdm/        # LightDM display manager
+│   │   │   │   ├── lightdm-gtk-greeter.conf
+│   │   │   │   └── lightdm.conf
+│   │   │   └── xbps.d/         # XBPS configuration + glibc repo keys
+│   │   ├── grub                # GRUB configuration
 │   │   ├── os-release          # OS identity file
-│   │   ├── polkit/             # PolicyKit rules (system authorization)
-│   │   │   ├── 20-networkmanager.rules
-│   │   │   └── 30-backlight.rules
+│   │   ├── polkit/
+│   │   │   └── 20-networkmanager.rules
 │   │   ├── resolv.conf         # DNS configuration
-│   │   ├── runit/              # runit-based init system
+│   │   ├── runit/              # runit init system
 │   │   │   ├── 1, 2, 3         # runit init stages
 │   │   │   ├── core-services/  # Core init scripts (udev, filesystem, swap, etc.)
-│   │   │   ├── runsvdir/       # Active service directories
-│   │   │   │   ├── default/    # Default services (agetty tty1-6, udevd)
-│   │   │   │   └── single/     # Single-user mode
+│   │   │   ├── runsvdir/       # Active services (agetty tty1-6, udevd)
 │   │   │   └── shutdown.d/     # Ordered shutdown scripts
 │   │   ├── service/
 │   │   │   └── pipewire/       # PipeWire audio service setup
-│   │   ├── sleek/              # T4n OS custom GRUB theme
-│   │   │   ├── icons/          # Distribution icons for bootloader
-│   │   │   ├── *.pf2           # Poppins & Terminus fonts for GRUB
-│   │   │   └── theme.txt       # GRUB theme definition
+│   │   └── sleek/              # T4n OS custom GRUB theme
+│   │       ├── icons/          # Distribution icons for the boot menu
+│   │       ├── *.pf2           # Poppins & Terminus fonts for GRUB
+│   │       └── theme.txt       # GRUB theme definition
+│   ├── gui/                    # GUI assets & configuration
+│   │   ├── config/
+│   │   │   ├── desktop/        # Calamares launcher
+│   │   │   ├── etc/            # Calamares, polkit, and udev configuration
+│   │   │   └── wallpapers/     # T4n OS wallpapers
+│   │   ├── cosmic/             # COSMIC variant (COMING_SOON)
+│   │   ├── xfce/               # XFCE assets, configuration, and scripts
 │   │   └── xorg.conf.d/
 │   │       └── 10-touchpad.conf  # Touchpad configuration (libinput)
-│   └── server/
-│       └── coming-soon.md      # Server configurations (in development)
+│   ├── security/               # Security variant configuration (ON_GOING)
+│   └── server/                 # Server variant configuration (coming-soon.md)
 ├── container/
 │   ├── Containerfile           # OCI container image definition
 │   └── docker-bake.hcl         # Docker Bake multi-target config
 ├── data/
-│   ├── issue                   # Terminal login banner message
+│   ├── issue                   # Terminal login banner
 │   └── splash.png              # Bootloader splash screen
 ├── dracut/
-│   ├── autoinstaller/          # Automated install module (VAI)
+│   ├── autoinstaller/          # Automated install module
 │   │   ├── autoinstall.cfg
 │   │   ├── install.sh
 │   │   ├── module-setup.sh
@@ -90,11 +94,12 @@ t4n-live/
 │   │   ├── module-setup.sh
 │   │   └── netmenu.sh
 │   └── vmklive/                # Core live system dracut module
-│       ├── adduser.sh          # Creates live user (anon)
-│       ├── locale.sh           # Locale setup
-│       ├── display-manager-autologin.sh
+│       ├── adduser.sh          # Creates the live user
 │       ├── accessibility.sh    # Accessibility setup (espeakup)
+│       ├── display-manager-autologin.sh
 │       ├── getty-serial.sh     # Serial console setup
+│       ├── locale.sh           # Locale setup
+│       ├── mtd.sh              # MTD support
 │       ├── nomodeset.sh        # Fallback graphics without KMS
 │       └── module-setup.sh
 ├── grub/
@@ -103,18 +108,12 @@ t4n-live/
 │   └── grub_void.cfg.post      # GRUB post-config template
 ├── isolinux/
 │   └── isolinux.cfg.in         # ISOLINUX config template (legacy BIOS)
-├── keys/                       # Public keys for package verification
+├── keys/                       # Public keys (.plist) for package verification
 ├── packer/
-│   ├── hcl2/                   # Packer HCL2 build definitions
-│   │   ├── build-cloud-generic.pkr.hcl
-│   │   ├── build-vagrant.pkr.hcl
-│   │   ├── source-qemu.pkr.hcl
-│   │   └── source-virtualbox-ose.pkr.hcl
+│   ├── hcl2/                   # Packer HCL2 build definitions (QEMU, VirtualBox, cloud, Vagrant)
 │   ├── http/                   # Preseed/kickstart configs for Packer
 │   ├── plugins.pkr.hcl         # Packer plugin declarations
 │   └── scripts/                # Post-install provisioning scripts
-│       ├── cloud.sh
-│       └── vagrant.sh
 ├── platforms/
 │   ├── pinebookpro.sh          # Pinebook Pro platform setup
 │   ├── x13s.sh                 # Lenovo X13s (ARM) platform setup
@@ -125,21 +124,24 @@ t4n-live/
 │   ├── index.md
 │   ├── ID/Docs.md
 │   └── EN/Docs.md              ← You are here
-├── t4n-live.sh
-├── t4n-iso.sh
-├── t4n-rootfs.sh
-├── t4n-platformfs.sh
-├── t4n-image.sh
-├── t4n-net.sh
-├── installer.py                # Python Installer T4n OS
-├── installer.sh                # Bash installer
+├── vtools/
+│   └── mkxbpskey.sh            # XBPS key generation utility
+├── installer.sh                # T4n OS installer (Bash)
 ├── lib.sh                      # Shared function library
-└── VNote.md                    # Internal development notes
+├── mkimage.sh                  # ARM flash-ready image generator
+├── mkiso.sh                    # Full live ISO generator
+├── mklive.sh                   # Basic live ISO generator
+├── mknet.sh                    # Netboot/PXE tarball generator
+├── mkplatformfs.sh             # PLATFORMFS generator
+├── mkrootfs.sh                 # ROOTFS generator
+├── release.sh                  # Release automation via GitHub CI
+└── version                     # Release version
 ```
 
 ## Dependencies
 
-> ⚠️ t4n-live is **not guaranteed to work** on distributions other than Void Linux, or inside containers.
+> [!WARNING]
+> t4n-live is **not guaranteed to work** on distributions other than Void Linux, or inside containers.
 
 | Dependency | Notes |
 |---|---|
@@ -147,28 +149,28 @@ t4n-live/
 | `bash` | Shell interpreter |
 | `liblz4` | lz4 compression for initramfs |
 | `xz` | xz compression for initramfs & squashfs (default) |
-| `qemu-user-static` | Required for `t4n-rootfs.sh` when cross-compiling architectures |
+| `qemu-user-static` | Required for `mkrootfs.sh` when cross-compiling architectures |
 
 ## Workflow
 
 ### 1. Building a Live ISO
 
-**Full ISO** (recommended — includes `t4n-installer/t4n-installer-gui` and additional utilities):
+**Full ISO** (recommended — includes `t4n-installer` and additional utilities):
 
 ```bash
-sudo ./t4n-iso.sh -a x86_64 -b xfce
+sudo ./mkiso.sh -a x86_64 -b xfce
 ```
 
-**Minimal ISO** (no installer):
+**Minimal ISO** (CLI only, no installer):
 
 ```bash
-sudo ./t4n-live.sh -a x86_64
+sudo ./mklive.sh -a x86_64
 ```
 
-**ISO with extra packages and a custom overlay:**
+**ISO with extra packages, an overlay, and kernel arguments:**
 
 ```bash
-sudo ./t4n-iso.sh -a x86_64 -b xfce -- \
+sudo ./mkiso.sh -a x86_64 -b xfce -- \
   -p "firefox neovim git htop" \
   -I ./my-overlay/ \
   -C "live.autologin live.shell=/bin/bash" \
@@ -178,12 +180,13 @@ sudo ./t4n-iso.sh -a x86_64 -b xfce -- \
 ### 2. Building a ROOTFS Tarball
 
 A ROOTFS contains a basic Void Linux root filesystem **without a kernel**. Useful for:
+
 - [Chroot-based installation](https://docs.voidlinux.org/installation/guides/chroot.html)
 - [Container & chroot environments](https://docs.voidlinux.org/config/containers-and-vms/chroot.html)
 
 ```bash
-sudo ./t4n-rootfs.sh x86_64
-sudo ./t4n-rootfs.sh aarch64-musl
+sudo ./mkrootfs.sh x86_64
+sudo ./mkrootfs.sh aarch64-musl
 ```
 
 ### 3. Building a PLATFORMFS (for ARM)
@@ -192,189 +195,212 @@ A PLATFORMFS is a ROOTFS **with a platform-specific kernel**. This step is requi
 
 ```bash
 # Step 1: Build the ROOTFS first
-sudo ./t4n-rootfs.sh aarch64
+sudo ./mkrootfs.sh aarch64
 
 # Step 2: Build the PLATFORMFS
-sudo ./t4n-platformfs.sh rpi-aarch64 void-aarch64-ROOTFS-*.tar.xz
+sudo ./mkplatformfs.sh rpi-aarch64 void-aarch64-ROOTFS-*.tar.xz
 ```
 
 ### 4. Building an ARM Image (Flash-ready)
 
-ARM images contain a complete filesystem layout with 2 partitions (`/boot` and `/`), ready to be flashed to storage.
+ARM images contain a complete filesystem layout with 2 partitions (`/boot` and `/`), ready to be written to storage.
 
 ```bash
 # Step 3: Generate the image
-sudo ./t4n-image.sh void-rpi-aarch64-PLATFORMFS-*.tar.xz
+sudo ./mkimage.sh void-rpi-aarch64-PLATFORMFS-*.tar.xz
 
-# Flash to SD card
+# Write it to the SD card
 dd if=void-rpi-aarch64-*.img of=/dev/sdX bs=4M status=progress
 ```
 
-> ⚠️ Replace `/dev/sdX` with your actual SD card device. Verify with `lsblk`.
+> [!WARNING]
+> Replace `/dev/sdX` with your actual SD card device. Verify with `lsblk`.
 
 ### 5. Building a Netboot Tarball
 
 ```bash
-sudo ./t4n-net.sh void-x86_64-ROOTFS-*.tar.xz
+sudo ./mknet.sh void-x86_64-ROOTFS-*.tar.xz
+```
+
+### 6. Running the Installer
+
+On x86 live images, `installer.sh` is installed as `/usr/bin/t4n-installer` (CLI), and Calamares is available as the GUI installer. Run it as root:
+
+```bash
+sudo t4n-installer
 ```
 
 ## Script Reference
 
-### `t4n-live.sh`
+### `mklive.sh`
 
-```
-Usage: t4n-live.sh [options]
+```text
+Usage: mklive.sh [options]
+
+Generates a basic live ISO image of T4n OS. This ISO image can be written
+to a CD/DVD-ROM or any USB stick.
+
+To generate a more complete live ISO image, use mkiso.sh.
 
 OPTIONS
  -a <arch>          Set XBPS_ARCH in the ISO image
  -b <system-pkg>    Set an alternative base package (default: base-system)
- -r <repo>          Use this XBPS repository (may be specified multiple times)
- -c <cachedir>      XBPS cache directory (default: ./xbps-cachedir-<arch>)
- -H <host_cachedir> Host XBPS cache directory
- -k <keymap>        Default keymap (default: us)
- -l <locale>        Default locale (default: en_US.UTF-8)
- -i <lz4|gzip|bzip2|xz>   Initramfs compression type (default: xz)
- -s <gzip|lzo|xz>   Squashfs compression type (default: xz)
- -o <file>          Output ISO file name (default: automatic)
- -p "<pkg> ..."     Install additional packages in the ISO
- -g "<pkg> ..."     Ignore packages when building the ISO
- -I <includedir>    Include directory into the ROOTFS
- -S "<service> ..." Enable services in the ISO
- -e <shell>         Default shell for root user (absolute path)
- -C "<arg> ..."     Additional kernel command line arguments
- -P "<platform> ..." Platforms for aarch64 EFI ISO (pinebookpro, x13s)
- -T <title>         Bootloader title (default: T4n OS)
- -v linux<version>  Custom Linux version (default: linux metapackage)
- -x <script>        Path to postsetup script before generating initramfs
- -K                 Do not remove builddir after build
- -h                 Show help and exit
+ -r <repo>          Use this XBPS repository. May be specified multiple times
+ -c <cachedir>      Use this XBPS cache directory (default: ./xbps-cachedir-<arch>)
+ -H <host_cachedir> Use this Host XBPS cache directory (default: ./xbps-cachedir-<host_arch>)
+ -k <keymap>        Default keymap to use (default: us)
+ -l <locale>        Default locale to use (default: en_US.UTF-8)
+ -i <lz4|gzip|bzip2|xz>
+                    Compression type for the initramfs image (default: xz)
+ -s <gzip|lzo|xz>   Compression type for the squashfs image (default: xz)
+ -o <file>          Output file name for the ISO image (default: automatic)
+ -p "<pkg> ..."     Install additional packages in the ISO image
+ -g "<pkg> ..."     Ignore packages when building the ISO image
+ -I <includedir>    Include directory structure under given path in the ROOTFS
+ -S "<service> ..." Enable services in the ISO image
+ -e <shell>         Default shell of the root user (must be absolute path)
+ -C "<arg> ..."     Add additional kernel command line arguments
+ -P "<platform> ..." Platforms for aarch64 EFI ISO images (pinebookpro, x13s)
+ -T <title>         Modify the bootloader title (default: T4n OS)
+ -v linux<version>  Install a custom Linux version (default: linux metapackage)
+ -x <script>        Path to a postsetup script to run before generating the initramfs
+ -K                 Do not remove builddir
+ -h                 Show this help and exit
  -V                 Show version and exit
 ```
 
-### `t4n-iso.sh`
+### `mkiso.sh`
 
-```
-Usage: t4n-iso.sh [options ...] [-- t4n-live options ...]
+```text
+Usage: mkiso.sh [options ...] [-- t4n-live options ...]
+
+Wrapper script around mklive.sh for several standard flavors of live images.
+Adds t4n-installer and other helpful utilities to the generated images.
 
 OPTIONS
- -a <arch>     Architecture or platform for the image
- -b <variant>  Variant: base | server | xfce | xfce-wayland (default: base)
-               May be specified multiple times to build multiple variants
- -d <date>     Override datestamp (format: YYYYMMDD)
+ -a <arch>     Set architecture (or platform) in the image
+ -b <variant>  One of base, server, xfce, security, cosmic (COMING SOON). May be
+               specified multiple times to build multiple variants (default: base)
+ -d <date>     Override the datestamp on the generated image (YYYYMMDD format)
  -t <arch-date-variant>  Equivalent to setting -a, -b, and -d
- -r <repo>     Use this XBPS repository (may be specified multiple times)
- -h            Show help and exit
+ -r <repo>     Use this XBPS repository. May be specified multiple times
+ -h            Show this help and exit
  -V            Show version and exit
 
-Additional options can be passed to t4n-live.sh by appending them after --.
+Other options can be passed directly to mklive.sh by specifying them after the --.
 ```
 
+### `mkrootfs.sh`
 
-### `t4n-rootfs.sh`
-
-```
-Usage: t4n-rootfs.sh [options] <arch>
+```text
+Usage: mkrootfs.sh [options] <arch>
 
 Supported architectures:
-  i686, i686-musl, x86_64, x86_64-musl,
-  armv5tel, armv5tel-musl, armv6l, armv6l-musl, armv7l, armv7l-musl,
-  aarch64, aarch64-musl,
-  mipsel, mipsel-musl,
-  ppc, ppc-musl, ppc64le, ppc64le-musl, ppc64, ppc64-musl,
-  riscv64, riscv64-musl
+ i686, i686-musl, x86_64, x86_64-musl,
+ armv5tel, armv5tel-musl, armv6l, armv6l-musl, armv7l, armv7l-musl
+ aarch64, aarch64-musl,
+ mipsel, mipsel-musl,
+ ppc, ppc-musl, ppc64le, ppc64le-musl, ppc64, ppc64-musl
+ riscv64, riscv64-musl
 
 OPTIONS
- -b <system-pkg>  Alternative base-system package (default: base-container-full)
- -c <cachedir>    XBPS cache directory
+ -b <system-pkg>  Set an alternative base-system package (default: base-container-full)
+ -c <cachedir>    Set XBPS cache directory (default: ./xbps-cachedir-<arch>)
  -C <file>        Full path to the XBPS configuration file
- -r <repo>        Use this XBPS repository (may be specified multiple times)
- -o <file>        ROOTFS output filename (default: automatic)
- -x <num>         Number of compression threads (default: dynamic)
- -h               Show help and exit
+ -r <repo>        Use this XBPS repository. May be specified multiple times
+ -o <file>        Filename to write the ROOTFS to (default: automatic)
+ -x <num>         Number of threads to use for image compression (default: dynamic)
+ -z <format>      Compression format to use [xz, none] (default: xz)
+ -h               Show this help and exit
  -V               Show version and exit
 ```
 
-### `t4n-platformfs.sh`
+### `mkplatformfs.sh`
 
-```
-Usage: t4n-platformfs.sh [options] <platform> <rootfs-tarball>
+```text
+Usage: mkplatformfs.sh [options] <platform> <rootfs-tarball>
 
-Supported platforms:
-  i686, x86_64, GCP,
-  rpi-armv6l, rpi-armv7l, rpi-aarch64,
-  pinebookpro, pinephone, rock64, rockpro64, asahi
+Supported platforms: i686, x86_64, GCP,
+                     rpi-armv6l, rpi-armv7l, rpi-aarch64,
+                     pinebookpro, pinephone, rock64, rockpro64, asahi
 
 OPTIONS
- -b <system-pkg>  Alternative base-system package (default: base-system)
- -c <cachedir>    XBPS cache directory
+ -b <system-pkg>  Set an alternative base-system package (default: base-system)
+ -c <cachedir>    Set the XBPS cache directory (default: ./xbps-cachedir-<arch>)
  -C <file>        Full path to the XBPS configuration file
- -k <cmd>         Run '<cmd> <ROOTFSPATH>' after the build completes
- -n               Do not compress; print the ROOTFS directory instead
- -o <file>        PLATFORMFS archive output filename (default: automatic)
+ -k <cmd>         Call '<cmd> <ROOTFSPATH>' after building the ROOTFS
+ -n               Do not compress the image, instead print out the ROOTFS directory
+ -o <file>        Filename to write the PLATFORMFS archive to (default: automatic)
  -p "<pkg> ..."   Additional packages to install into the ROOTFS
- -r <repo>        Use this XBPS repository (may be specified multiple times)
- -x <num>         Number of compression threads (default: dynamic)
- -h               Show help and exit
+ -r <repo>        Use this XBPS repository. May be specified multiple times
+ -x <num>         Number of threads to use for image compression (default: dynamic)
+ -h               Show this help and exit
  -V               Show version and exit
 ```
 
-### `t4n-image.sh`
+### `mkimage.sh`
 
-```
-Usage: t4n-image.sh [options] <platformfs-tarball>
+```text
+Usage: mkimage.sh [options] <platformfs-tarball>
 
 OPTIONS
  -b <fstype>    /boot filesystem type (default: vfat)
  -B <bsize>     /boot filesystem size (default: 256MiB)
  -r <fstype>    / filesystem type (default: ext4)
  -s <totalsize> Total image size (default: 900MiB)
- -o <file>      Image filename (default: automatic)
- -x <num>       Number of compression threads (default: dynamic)
- -h             Show help and exit
+ -o <output>    Image filename (default: guessed automatically)
+ -x <num>       Number of threads to use for image compression (default: dynamic)
+ -h             Show this help and exit
  -V             Show version and exit
 
-Accepted size suffixes: KiB, MiB, GiB, TiB, EiB
+Accepted size suffixes: KiB, MiB, GiB, TiB, EiB.
 ```
 
-### `t4n-net.sh`
+### `mknet.sh`
 
-```
-Usage: t4n-net.sh [options] <rootfs-tarball>
+```text
+Usage: mknet.sh [options] <rootfs-tarball>
 
 OPTIONS
- -r <repo>          XBPS repository (may be specified multiple times)
- -c <cachedir>      XBPS cache directory
- -i <lz4|gzip|bzip2|xz>   Initramfs compression type (default: xz)
- -o <file>          Netboot tarball output filename (default: automatic)
- -K linux<version>  Custom Linux version (default: linux metapackage)
- -k <keymap>        Default keymap (default: us)
- -l <locale>        Default locale (default: en_US.UTF-8)
- -C "<arg> ..."     Additional kernel command line arguments
- -T <title>         Bootloader title (default: Void Linux)
- -S <image>         Custom splash image (default: data/splash.png)
- -h                 Show help and exit
+ -r <repo>          Use this XBPS repository. May be specified multiple times
+ -c <cachedir>      Use this XBPS cache directory (default: )
+ -i <lz4|gzip|bzip2|xz>
+                    Compression type for the initramfs image (default: xz)
+ -o <file>          Output file name for the netboot tarball (default: automatic)
+ -K linux<version>  Install a custom Linux version on ISO image (default: linux metapackage)
+ -k <keymap>        Default keymap to use (default: us)
+ -l <locale>        Default locale to use (default: en_US.UTF-8)
+ -C "<arg> ..."     Add additional kernel command line arguments
+ -T <title>         Modify the bootloader title (default: Void Linux)
+ -S <image>         Set a custom splash image for the bootloader (default: data/splash.png)
+ -h                 Show this help and exit
  -V                 Show version and exit
 ```
 
 ## common/ Configuration
 
-The `common/` directory holds system configuration files that are bundled into the image during the build. It currently has two sub-directories: `cli/` (active) and `server/` (in development).
+The `common/` directory holds system configuration files bundled into the image during the build. It has four sub-directories: `cli/` and `gui/` (active), plus `security/` and `server/` (in development).
 
 ### `common/cli/config/lightdm/`
 
-Contains configuration for the **LightDM** display manager used in desktop variants (xfce, xfce-wayland):
+Configuration for **LightDM**, used by desktop variants:
 
 - `lightdm.conf` — Main LightDM configuration (greeter, autologin, session)
 - `lightdm-gtk-greeter.conf` — GTK greeter appearance (theme, icons, font)
 
+### `common/cli/config/xbps.d/`
+
+In-image XBPS configuration, including the glibc repository key (`10-glibc.conf`).
+
 ### `common/cli/polkit/`
 
-**PolicyKit** rules that allow regular users to perform system operations without a password:
+**PolicyKit** rules that let regular users perform selected system operations without a password:
 
 | File | Purpose |
 |---|---|
 | `20-networkmanager.rules` | Network management for regular users |
-| `30-backlight.rules` | Screen brightness control |
+
+The backlight udev rule lives in `common/gui/config/etc/udev/rules.d/30-backlight.rules`.
 
 ### `common/cli/runit/`
 
@@ -398,10 +424,9 @@ Contains configuration for the **LightDM** display manager used in desktop varia
 | `05-misc.sh` | Set hostname, loopback, time |
 | `08-sysctl.sh` | Apply sysctl parameters |
 | `98-sbin-merge.sh` | Merge /sbin into /usr/bin |
-| `99-cleanup.sh` | Clean up lock files, tmp |
+| `99-cleanup.sh` | Clean up lock files and tmp |
 
-**`runsvdir/default/`** — Services enabled by default:
-`agetty-tty1` through `agetty-tty6` (login terminals), `udevd`
+**`runsvdir/default/`** — Services enabled by default: `agetty-tty1` through `agetty-tty6`, and `udevd`.
 
 **`shutdown.d/`** — Shutdown scripts run in order when the system powers off:
 
@@ -419,39 +444,52 @@ Contains configuration for the **LightDM** display manager used in desktop varia
 
 ### `common/cli/sleek/`
 
-The T4n OS custom **GRUB theme** named **Sleek**. Contains:
-- Image assets for background, selection bar, progress indicator, slider
+The T4n OS custom **GRUB theme** named **Sleek**:
+
+- Image assets for background, selection bar, progress indicator, and slider
 - Poppins (14/16/18/48pt) and Terminus (14pt) fonts in `.pf2` format
 - `icons/` directory with 60+ Linux distribution icons for multi-boot menus
 - `theme.txt` — GRUB theme layout definition
 
 ### `common/cli/service/pipewire/`
 
-Setup script for the **PipeWire** service (modern audio server). Invoked during live environment initialization.
+Setup script for the **PipeWire** service (audio server). Invoked during live environment initialization.
+
+### `common/gui/`
+
+GUI assets and configuration:
+
+- `config/desktop/calamares.desktop` — Calamares launcher on the live desktop
+- `config/etc/calamares/` — Calamares configuration (branding, modules, styling)
+- `config/etc/polkit-1/rules.d/` and `config/etc/udev/rules.d/` — polkit & udev rules
+- `config/wallpapers/` — T4n OS wallpapers
+- `xfce/` — XFCE assets, configuration, and scripts
+- `xorg.conf.d/10-touchpad.conf` — Touchpad configuration (libinput)
+- `cosmic/` — COSMIC variant placeholder
 
 ## Kernel Command-line Parameters
 
 | Parameter | Description |
 |---|---|
 | `live.autologin` | Skip the login screen on `tty1` |
-| `live.user=<name>` | Change non-root username (default: `anon`, password: `voidlinux`) |
-| `live.shell=<path>` | Set the default shell for the non-root user in the live environment |
-| `live.accessibility` | Enable `espeakup` screen reader |
-| `console=ttyS0` | Enable agetty on serial console (`ttyS0`, `hvc0`, `hvsi0`) |
-| `locale.LANG=<locale>` | Set the LANG variable (default: `en_US.UTF-8`) |
+| `live.user=<name>` | Change the non-root username (default: `anon`, password: `voidlinux`) |
+| `live.shell=<path>` | Set the default shell for the non-root user |
+| `live.accessibility` | Enable the `espeakup` screen reader |
+| `console=ttyS0` | Enable a serial console (`ttyS0`, `hvc0`, `hvsi0`) |
+| `locale.LANG=<locale>` | Set the `LANG` variable (default: `en_US.UTF-8`) |
 | `vconsole.keymap=<keymap>` | Set the console keymap (default: `us`) |
 
 ### Example Combinations
 
-```
+```text
 # Auto-login as user "jane" with bash shell
 live.autologin live.user=jane live.shell=/bin/bash
 
 # Serial console with French keymap
 console=ttyS0 vconsole.keymap=fr
 
-# Canadian French language
-locale.LANG=fr_CA.UTF-8
+# Indonesian language
+locale.LANG=id_ID.UTF-8
 
 # Enable accessibility with auto-login
 live.accessibility live.autologin
@@ -469,6 +507,7 @@ The `packer/` directory contains [HashiCorp Packer](https://www.packer.io/) conf
 | `hcl2/source-virtualbox-ose.pkr.hcl` | VirtualBox OSE source |
 | `hcl2/build-cloud-generic.pkr.hcl` | Cloud-generic image build |
 | `hcl2/build-vagrant.pkr.hcl` | Vagrant box build |
+| `hcl2/vagrant/` | Vagrant build definitions (VirtualBox) |
 | `plugins.pkr.hcl` | Required plugin declarations |
 | `http/*.cfg` | Preseed/kickstart files for auto-install |
 | `scripts/cloud.sh` | Cloud image provisioning |
@@ -492,19 +531,17 @@ podman build -f container/Containerfile -t t4n-live:latest
 docker buildx bake -f container/docker-bake.hcl
 ```
 
-<!-- ## Release & Signing
+## Release & CI
 
-`release.sh` interacts with **GitHub Actions** to:
-1. Trigger image builds in the CI pipeline
-2. Sign the generated images using keys from the `keys/` directory
-3. Upload build artifacts to GitHub Releases
-
-Public keys for verification are stored in `keys/` in `.plist` format. -->
+- `release.sh` — release build automation.
+- `.github/workflows/gen-images.yml` — image build pipeline on GitHub Actions.
+- `.github/workflows/container.yaml` — container image build.
+- `keys/` — public keys (`.plist`) for package verification; private keys are not kept in the repository.
 
 ---
 
 <div align="center">
 
-[← Back to Index](../index.md) · [Versi Bahasa Indonesia](../ID/Docs.md) · Built with ❤️ by [T4n-Labs](https://github.com/T4n-Labs)
+[← Back to Index](../index.md) · [Versi Bahasa Indonesia](../ID/Docs.md) · [← README](../../README.md) · Built with ❤️ by [T4n-Labs](https://github.com/T4n-Labs)
 
 </div>

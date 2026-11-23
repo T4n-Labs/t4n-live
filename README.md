@@ -1,209 +1,74 @@
 # t4n-live
 
-> 🇮🇩 [Bahasa Indonesia](#bahasa-indonesia) | 🇬🇧 [English](#english)
-
-<a name="bahasa-indonesia"></a>
-# 🇮🇩 Bahasa Indonesia
-
-## T4n OS — Generator Live Image, Rootfs & Installer
-
-**t4n-live** adalah kumpulan skrip shell untuk membangun live ISO image, rootfs tarball, dan filesystem image berbasis [Void Linux](https://voidlinux.org/) yang dikustomisasi untuk **T4n OS**.
-
-## Username & Password
-- username = t4nos
-- password = t4nlabs
-
-> 📚 Dokumentasi lengkap tersedia di direktori [`vdocs/`](./vdocs/index.md)
-
-## Struktur Repositori
-
-```
-t4n-live/
-├── common/              # Konfigurasi sistem bersama (CLI & Server)
-│   ├── cli/             # Konfigurasi untuk varian desktop/CLI
-│   │   ├── config/      # LightDM, xorg, dll.
-│   │   ├── grub/        # Konfigurasi GRUB
-│   │   ├── polkit/      # Aturan PolicyKit
-│   │   ├── runit/       # Init system (runit stage 1/2/3, services)
-│   │   ├── service/     # Setup service tambahan (pipewire, dll.)
-│   │   ├── sleek/       # Tema GRUB kustom T4n OS
-│   │   └── xorg.conf.d/ # Konfigurasi Xorg
-│   └── server/          # Konfigurasi untuk varian server (coming soon)
-├── container/           # Containerfile & Docker Bake HCL
-├── data/                # Aset data (splash screen, issue)
-├── dracut/              # Modul dracut (vmklive, autoinstaller, netmenu)
-├── grub/                # Template konfigurasi GRUB
-├── isolinux/            # Konfigurasi bootloader ISOLINUX (legacy BIOS)
-├── keys/                # Signing keys
-├── packer/              # Build config Packer (QEMU, VirtualBox, Vagrant)
-├── platforms/           # Skrip platform-spesifik (pinebookpro, x13s)
-├── pxelinux.cfg/        # Konfigurasi PXE boot
-├── vdocs/               # Dokumentasi proyek (ID & EN)
-│   ├── index.md         # Indeks dokumentasi
-│   ├── ID/Docs.md       # Dokumentasi Bahasa Indonesia
-│   └── EN/Docs.md       # Dokumentasi English
-├── mklive.sh          # Generator live ISO dasar
-├── mkiso.sh           # Generator live ISO lengkap (wrapper)
-├── t4n-rootfs.sh        # Generator ROOTFS tarball
-├── mkplatformfs.sh    # Generator PLATFORMFS (platform-spesifik)
-├── mkimage.sh         # Generator image ARM (dd-ready)
-├── mknet.sh           # Generator tarball netboot
-├── installer.py         # Python Installer T4n OS
-├── installer.sh         # Bash Installer T4n OS
-├── lib.sh               # Library fungsi bersama
-└── VNote.md             # Catatan pengembangan
-```
-
-## Dependensi
-
-> ⚠️ t4n-live **tidak dijamin berfungsi** pada distribusi selain Void Linux, atau di dalam container.
-
-- `xbps >= 0.45`
-- `bash`
-- Library kompresi initramfs: `liblz4` (untuk lz4) atau `xz` *(default: xz)*
-- `qemu-user-static` — dibutuhkan untuk `t4n-rootfs.sh` (cross-arch build)
-
-## Skrip Utama
-
-| Skrip | Fungsi |
-|---|---|
-| `mklive.sh` | Generator live ISO T4n OS (dasar/minimalis) |
-| `mkiso.sh` | Generator live ISO lengkap dengan `t4n-installer` (i686, x86_64, aarch64) |
-| `mkrootfs.sh` | Generator rootfs Void Linux untuk semua platform & arsitektur |
-| `mkplatformfs.sh` | Generator rootfs platform-spesifik (dengan kernel, untuk ARM) |
-| `mkimage.sh` | Generator image ARM siap-flash (`dd`) |
-| `mknet.sh` | Generator tarball netboot/PXE |
-| `installer.sh` | Penginstal OS T4n yang ditulis dalam Bash |
-
-## Quick Start
-
-### Build Live ISO (x86_64, varian xfce)
-
-```bash
-sudo ./mkiso.sh -a x86_64 -b xfce
-```
-
-### Build Live ISO dengan paket tambahan
-
-```bash
-sudo ./mkiso.sh -a x86_64 -b xfce -- -p "firefox neovim git" -o T4nOS-xfce.iso
-```
-
-### Build Image ARM (Raspberry Pi 4)
-
-```bash
-# 1. Build ROOTFS
-sudo ./t4n-rootfs.sh aarch64
-
-# 2. Build PLATFORMFS
-sudo ./mkplatformfs.sh rpi-aarch64 void-aarch64-ROOTFS-*.tar.xz
-
-# 3. Generate image siap flash
-sudo ./mkimage.sh void-aarch64-ROOTFS-*.tar.xz
-mk### Varian yang Tersedia (`-b`)
-
-| Varian | Deskripsi |
-|---|---|
-| `base` | Sistem dasar tanpa DE |
-| `server` | Varian server headless |
-| `xfce` | Desktop XFCE (X11) |
-| `xfce-wayland` | Desktop XFCE (Wayland) |
-
-[!Note!] : Varian Server Belum Tersedia
-
-## Parameter Kernel Command-line
-
-| Parameter | Fungsi |
-|---|---|
-| `live.autologin` | Skip login screen di `tty1` |
-| `live.user=<nama>` | Ubah username non-root (default: `anon`, password: `voidlinux`) |
-| `live.shell=<path>` | Set shell default user non-root |
-| `live.accessibility` | Aktifkan screen reader `espeakup` |
-| `console=ttyS0` | Aktifkan serial console (`ttyS0`, `hvc0`, `hvsi0`) |
-| `locale.LANG=<locale>` | Set locale (default: `en_US.UTF-8`) |
-| `vconsole.keymap=<keymap>` | Set keymap console (default: `us`) |
-
-## Dokumentasi
-
-Dokumentasi lengkap tersedia di direktori **VDocs**:
-
-- 📄 [Indeks Dokumentasi](./vdocs/index.md)
-- 🇮🇩 [Dokumentasi Bahasa Indonesia](./vdocs/ID/Docs.md)
-- 🇬🇧 [Documentation in English](./vdocs/EN/Docs.md)
-
-## Lisensi
-
-Lihat file [COPYING](./COPYING) untuk informasi lisensi.
-
-<a name="english"></a>
-# 🇬🇧 English
+> 🇬🇧 English | 🇮🇩 [Bahasa Indonesia](./README.ID.md)
 
 ## T4n OS — Live Image, Rootfs & Installer Generator
 
 **t4n-live** is a collection of shell scripts for building live ISO images, rootfs tarballs, and filesystem images based on [Void Linux](https://voidlinux.org/), customized for **T4n OS**.
 
+### Live System Credentials
+
+| Field | Value |
+|---|---|
+| Username | `t4nos` |
+| Password | `t4nlabs` |
+
 > 📚 Full documentation is available in the [`vdocs/`](./vdocs/index.md) directory.
 
 ## Repository Structure
 
-```
+```text
 t4n-live/
-├── common/              # Shared system configurations (CLI & Server)
-│   ├── cli/             # Configurations for desktop/CLI variants
-│   │   ├── config/      # LightDM, xorg, etc.
-│   │   ├── grub/        # GRUB configuration
-│   │   ├── polkit/      # PolicyKit rules
-│   │   ├── runit/       # Init system (runit stage 1/2/3, services)
-│   │   ├── service/     # Additional service setup (pipewire, etc.)
-│   │   ├── sleek/       # T4n OS custom GRUB theme
-│   │   └── xorg.conf.d/ # Xorg configuration
-│   └── server/          # Server variant configurations (coming soon)
-├── container/           # Containerfile & Docker Bake HCL
-├── data/                # Data assets (splash screen, issue)
-├── dracut/              # Dracut modules (vmklive, autoinstaller, netmenu)
-├── grub/                # GRUB configuration templates
-├── isolinux/            # ISOLINUX bootloader config (legacy BIOS)
-├── keys/                # Signing keys
-├── packer/              # Packer build configs (QEMU, VirtualBox, Vagrant)
-├── platforms/           # Platform-specific scripts (pinebookpro, x13s)
-├── pxelinux.cfg/        # PXE boot configuration
-├── vdocs/               # Project documentation (ID & EN)
-│   ├── index.md         # Documentation index
-│   ├── ID/Docs.md       # Indonesian documentation
-│   └── EN/Docs.md       # English documentation
-├── mklive.sh          # Basic live ISO generator
-├── mkiso.sh           # Full live ISO generator (wrapper)
-├── t4n-rootfs.sh        # ROOTFS tarball generator
-├── mkplatformfs.sh    # Platform-specific PLATFORMFS generator
-├── mkimage.sh         # ARM image generator (dd-ready)
-├── mknet.sh           # Netboot tarball generator
-├── installer.py         # Python Installer T4n OS
-├── installer.sh         # Bash installer
-├── lib.sh               # Shared function library
-└── VNote.md             # Development notes
+├── common/                  # Shared system configurations
+│   ├── cli/                 # Desktop/CLI variant: LightDM, Xorg, polkit, runit, GRUB theme
+│   ├── gui/                 # GUI assets: Calamares branding, wallpapers, XFCE
+│   ├── security/            # Security variant configuration (in development)
+│   └── server/              # Server variant configuration (in development)
+├── container/               # Containerfile & Docker Bake (HCL)
+├── data/                    # Data assets (splash screen, issue)
+├── dracut/                  # Dracut modules (vmklive, autoinstaller, netmenu)
+├── grub/                    # GRUB configuration templates
+├── isolinux/                # ISOLINUX configuration (legacy BIOS)
+├── keys/                    # Public signing keys (.plist)
+├── packer/                  # Packer build configuration (QEMU, VirtualBox, Vagrant)
+├── platforms/               # Platform-specific scripts (pinebookpro, x13s)
+├── pxelinux.cfg/            # PXE boot configuration
+├── vdocs/                   # Project documentation (ID & EN)
+├── vtools/                  # Additional utilities (mkxbpskey.sh)
+├── installer.sh             # T4n OS installer (Bash)
+├── lib.sh                   # Shared function library
+├── mkimage.sh               # ARM flash-ready image generator
+├── mkiso.sh                 # Full live ISO generator (wrapper)
+├── mklive.sh                # Basic live ISO generator
+├── mknet.sh                 # Netboot/PXE tarball generator
+├── mkplatformfs.sh          # Platform-specific PLATFORMFS generator
+├── mkrootfs.sh              # ROOTFS generator
+├── release.sh               # Release automation via GitHub CI
+└── version                  # Release version
 ```
 
 ## Dependencies
 
-> ⚠️ t4n-live is **not guaranteed to work** on distributions other than Void Linux, or inside containers.
+> [!WARNING]
+> t4n-live is **not guaranteed to work** on distributions other than Void Linux, or inside containers.
 
 - `xbps >= 0.45`
 - `bash`
-- Initramfs compression library: `liblz4` (for lz4) or `xz` *(default: xz)*
-- `qemu-user-static` — required for `t4n-rootfs.sh` (cross-architecture builds)
+- Initramfs compression library: `liblz4` (for lz4) or `xz` *(default: `xz`)*
+- `qemu-user-static` — required by `mkrootfs.sh` for cross-architecture builds
 
 ## Main Scripts
 
 | Script | Description |
 |---|---|
-| `mklive.sh` | Basic/minimal T4n OS live ISO generator |
+| `mklive.sh` | Basic/minimal live ISO generator |
 | `mkiso.sh` | Full live ISO generator with `t4n-installer` (i686, x86_64, aarch64) |
 | `mkrootfs.sh` | Void Linux rootfs generator for all platforms & architectures |
 | `mkplatformfs.sh` | Platform-specific rootfs generator (with kernel, for ARM) |
 | `mkimage.sh` | ARM flash-ready image generator (`dd`) |
 | `mknet.sh` | Netboot/PXE tarball generator |
-| `installer.py` | T4n OS installer written Python |
-| `installer.sh` | T4n OS installer written Bash |
+| `installer.sh` | T4n OS installer written in Bash |
+| `release.sh` | Release automation via GitHub CI |
 
 ## Quick Start
 
@@ -213,7 +78,15 @@ t4n-live/
 sudo ./mkiso.sh -a x86_64 -b xfce
 ```
 
+`-b` may be repeated to build several variants at once:
+
+```bash
+sudo ./mkiso.sh -a x86_64 -b base -b xfce
+```
+
 ### Build a Live ISO with extra packages
+
+Options for `mklive.sh` go after `--`:
 
 ```bash
 sudo ./mkiso.sh -a x86_64 -b xfce -- -p "firefox neovim git" -o T4nOS-xfce.iso
@@ -223,43 +96,56 @@ sudo ./mkiso.sh -a x86_64 -b xfce -- -p "firefox neovim git" -o T4nOS-xfce.iso
 
 ```bash
 # 1. Build ROOTFS
-sudo ./t4n-rootfs.sh aarch64
+sudo ./mkrootfs.sh aarch64
 
 # 2. Build PLATFORMFS
 sudo ./mkplatformfs.sh rpi-aarch64 void-aarch64-ROOTFS-*.tar.xz
 
-# 3. Generate flash-ready image
+# 3. Generate the flash-ready image
 sudo ./mkimage.sh void-rpi-aarch64-PLATFORMFS-*.tar.xz
-mk### Available Variants (`-b`)
+
+# 4. Write it to the SD card
+dd if=void-rpi-aarch64-*.img of=/dev/sdX bs=4M status=progress
+```
+
+### Installer
+
+On x86 live images, `installer.sh` is installed as `/usr/bin/t4n-installer` (CLI) alongside the Calamares GUI installer. Run it as root from the live system:
+
+```bash
+sudo t4n-installer
+```
+
+## Available Variants (`-b`)
 
 | Variant | Description |
 |---|---|
-| `base` | Minimal base system without a DE |
-| `server` | Headless server variant |
-| `xfce` | XFCE desktop (X11) |
-| `xfce-wayland` | XFCE desktop (Wayland) |
+| `base` | Minimal base system without a DE (default) |
+| `xfce` | XFCE desktop (X11) — automatically uses XFCE Wayland on asahi devices |
+| `security` | Not yet available |
+| `server` | Not yet available |
+| `cosmic` | Not yet available |
 
-[!Note!] : Server Variant Not Yet Available
+> [!NOTE]
+> `security`, `server`, and `cosmic` are still in development and exit with a `COMING SOON` message.
 
 ## Kernel Command-line Parameters
 
 | Parameter | Description |
 |---|---|
-| `live.autologin` | Skip login screen on `tty1` |
-| `live.user=<name>` | Change non-root username (default: `anon`, password: `voidlinux`) |
+| `live.autologin` | Skip the login screen on `tty1` |
+| `live.user=<name>` | Change the non-root username (default: `anon`, password: `voidlinux`) |
 | `live.shell=<path>` | Set the default shell for the non-root user |
-| `live.accessibility` | Enable `espeakup` screen reader |
-| `console=ttyS0` | Enable serial console (`ttyS0`, `hvc0`, `hvsi0`) |
-| `locale.LANG=<locale>` | Set locale (default: `en_US.UTF-8`) |
-| `vconsole.keymap=<keymap>` | Set console keymap (default: `us`) |
+| `live.accessibility` | Enable the `espeakup` screen reader |
+| `console=ttyS0` | Enable a serial console (`ttyS0`, `hvc0`, `hvsi0`) |
+| `locale.LANG=<locale>` | Set the locale (default: `en_US.UTF-8`) |
+| `vconsole.keymap=<keymap>` | Set the console keymap (default: `us`) |
 
 ## Documentation
 
-Full documentation is available in the **VDocs** directory:
-
-- 📄 [Documentation Index](./vdocs/index.md)
+- 📄 [Documentation index](./vdocs/index.md)
+- 🇬🇧 [English documentation](./vdocs/EN/Docs.md)
 - 🇮🇩 [Dokumentasi Bahasa Indonesia](./vdocs/ID/Docs.md)
-- 🇬🇧 [Documentation in English](./vdocs/EN/Docs.md)
 
 ## License
 
